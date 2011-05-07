@@ -61,15 +61,22 @@ namespace CDRUpdater
 
             DebugLog.Write("Parsing CDR...\n");
 
-            DebugLog.Write("Complete\n");
+            CDR CDRBlob = null;
 
-            CDR CDRBlob;
             using (BlobTypedReader<CDR> BlobReader = BlobTypedReader<CDR>.Create(CDRBLOB))
             {
                 BlobReader.Process();
 
                 CDRBlob = BlobReader.Target;
             }
+
+            if (CDRBlob == null)
+            {
+                DebugLog.Write("Unable to parse CDR.");
+                return;
+            }
+
+
         }
     }
 }

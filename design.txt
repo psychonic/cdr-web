@@ -1,24 +1,32 @@
 tables
 
 cdr
- cdr_hash (PK)
- cdr_id
+ cdr_id (PK)
+ cdr_hash
  date
- 
+  
 app
-(all the current app data)
-(serialize filesystems?, launchoptions, userdefined, NOT versions)
+ (all the current app data)
+ (serialize filesystems, launchoptions, userdefined, NOT versions)
 
 app_version
-appid
-cdr_hash (CDR this version first appeared in, allows us to select history so we don't see newer versions)
-(the version data)
+ appid
+ cdr_id (CDR this version first appeared in, allows us to select history so we don't see newer versions)
+ (the version data)
 
 sub
-(all the current sub data)
-(serialize discounts, extended_info, ratelimits)
+ (all the current sub data)
+ (serialize discounts, extended_info, ratelimits)
 
 apps_subs
-app
-sub
-cdr_hash (CDR this pair first appeared in, allows us to select history so we don't see new apps added to subs)
+ app
+ sub
+ cdr_id (CDR this pair first appeared in, allows us to select history so we don't see new apps added to subs)
+
+sub_state_capture
+ cdr_id
+ (sub info before it changes, null otherwise)
+
+app_state_capture
+ cdr_id
+ (app info before it changes, null otherwise)
