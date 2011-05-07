@@ -1,0 +1,24 @@
+tables
+
+cdr
+ cdr_hash (PK)
+ cdr_id
+ date
+ 
+app
+(all the current app data)
+(serialize filesystems?, launchoptions, userdefined, NOT versions)
+
+app_version
+appid
+cdr_hash (CDR this version first appeared in, allows us to select history so we don't see newer versions)
+(the version data)
+
+sub
+(all the current sub data)
+(serialize discounts, extended_info, ratelimits)
+
+apps_subs
+app
+sub
+cdr_hash (CDR this pair first appeared in, allows us to select history so we don't see new apps added to subs)
