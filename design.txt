@@ -1,8 +1,11 @@
 tables
 
-LOAD DATA INFILE 'C:\\Users\\Azu\\Documents\\CDR\\CDRUpdater\\CDRUpdater\\bin\\Debug\\app.data' REPLACE INTO TABLE app LINES TERMINATED BY "\r\n"
+LOAD DATA INFILE 'C:\\Users\\Azu\\Documents\\CDR\\CDRUpdater\\CDRUpdater\\bin\\Debug\\app.data' REPLACE INTO TABLE app LINES TERMINATED BY "\r\n";
+LOAD DATA INFILE 'C:\\Users\\Azu\\Documents\\CDR\\CDRUpdater\\CDRUpdater\\bin\\Debug\\app_capture.data' REPLACE INTO TABLE app_state_capture LINES TERMINATED BY "\r\n";
+LOAD DATA INFILE 'C:\\Users\\Azu\\Documents\\CDR\\CDRUpdater\\CDRUpdater\\bin\\Debug\\sub.data' REPLACE INTO TABLE sub LINES TERMINATED BY "\r\n";
+LOAD DATA INFILE 'C:\\Users\\Azu\\Documents\\CDR\\CDRUpdater\\CDRUpdater\\bin\\Debug\\sub_capture.data' REPLACE INTO TABLE sub_state_capture LINES TERMINATED BY "\r\n";
+LOAD DATA INFILE 'C:\\Users\\Azu\\Documents\\CDR\\CDRUpdater\\CDRUpdater\\bin\\Debug\\apps_subs.data' IGNORE INTO TABLE apps_subs LINES TERMINATED BY "\r\n";
 
-LOAD DATA INFILE 'C:\\Users\\Azu\\Documents\\CDR\\CDRUpdater\\CDRUpdater\\bin\\Debug\\app_capture.data' REPLACE INTO TABLE app_state_capture LINES TERMINATED BY "\r\n"
 
 d66036953d42216b98d862fad5ad4ad4084d0955
 

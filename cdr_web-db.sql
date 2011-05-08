@@ -4,7 +4,7 @@
 --
 -- Host: 127.0.0.1:3306
 
--- Generation Time: May 08, 2011 at 12:24 PM
+-- Generation Time: May 08, 2011 at 01:09 PM
 -- Server version: 5.5.11
 -- PHP Version: 5.3.6
 
@@ -58,7 +58,7 @@ CREATE TABLE `apps_subs` (
   `app_id` int(11) NOT NULL,
   `sub_id` int(11) NOT NULL,
   `cdr_id` int(11) NOT NULL,
-  KEY `app_id` (`app_id`,`sub_id`),
+  PRIMARY KEY (`app_id`,`sub_id`),
   KEY `cdr_id` (`cdr_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

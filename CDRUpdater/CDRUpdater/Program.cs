@@ -130,7 +130,10 @@ namespace CDRUpdater
                     data.Clear();
                     adapter.Fill(data);
 
-                    var app_info = data.Tables[0].Rows[0];
+                    DataRow app_info = null;
+
+                    if(data.Tables[0].Rows.Count > 0)
+                        app_info = data.Tables[0].Rows[0];
                     
                     string app_current_data = null;
                     string app_state_data = null;
@@ -154,8 +157,11 @@ namespace CDRUpdater
 
 
             // capture sub data
+            data = new DataSet();
+
             using (StreamWriter sw_sub = new StreamWriter(new FileStream("sub.data", FileMode.Create)))
             using (StreamWriter sw_sub_capture = new StreamWriter(new FileStream("sub_capture.data", FileMode.Create)))
+            using (StreamWriter sw_apps_subs = new StreamWriter(new FileStream("apps_subs.data", FileMode.Create)))
             {
                 foreach (Sub sub in CDRBlob.Subs)
                 {
@@ -163,7 +169,10 @@ namespace CDRUpdater
                     data.Clear();
                     adapter.Fill(data);
 
-                    var sub_info = data.Tables[0].Rows[0];
+                    DataRow sub_info = null;
+
+                    if (data.Tables[0].Rows.Count > 0)
+                        sub_info = data.Tables[0].Rows[0];
 
                     string sub_current_data = null;
                     string sub_state_data = null;
@@ -175,6 +184,11 @@ namespace CDRUpdater
                     if (sub_state_data != null)
                     {
                         sw_sub_capture.WriteLine(sub_state_data);
+                    }
+
+                    foreach (int appid in sub.AppIDs)
+                    {
+                        sw_apps_subs.WriteLine(String.Format("{0}\t{1}\t{2}", appid, sub.SubID, cdr_id));
                     }
                 }
             }
