@@ -9,14 +9,21 @@ app
  (all the current app data)
  (serialize filesystems, launchoptions, userdefined, NOT versions)
 
-app_version
- appid
- cdr_id (CDR this version first appeared in, allows us to select history so we don't see newer versions)
- (the version data)
+app_version, app_filesystems, app_launch_options, app_user_defined
+ app_id (PK)
+ cdr_id (PK)
+ cdr_id_last
+ (....)
 
 sub
  (all the current sub data)
  (serialize discounts, extended_info, ratelimits)
+
+sub_discounts, sub_extended_info, sub_rate_limits
+ sub_id (PK)
+ cdr_id (PK)
+ cdr_id_last
+ (.....)
 
 apps_subs
  app

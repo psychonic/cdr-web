@@ -11,13 +11,16 @@ namespace CDRUpdater
     {
         const string HASHFILE = "CDR.hash";
         const string CDRBLOB = "CDR.blob";
+        const string SQL_CONNECTION_STRING = "connection_string.cfg";
 
         static void Main(string[] args)
         {
+            string connection_string = File.ReadAllText(SQL_CONNECTION_STRING);
+
             DebugLog.Write("CDR updater running!\n");
 
             DebugLog.Write("Downloading CDR...\n");
-            byte[] cdr = null;
+            /*byte[] cdr = null;
             try
             {
                 byte[] hash = null;
@@ -57,7 +60,7 @@ namespace CDRUpdater
             {
                 DebugLog.Write("Unable to download CDR: {0}\n", ex.ToString());
                 return;
-            }
+            }*/
 
             DebugLog.Write("Parsing CDR...\n");
 
@@ -76,7 +79,24 @@ namespace CDRUpdater
                 return;
             }
 
+            using (StreamWriter sw = new StreamWriter(new FileStream("output.sql", FileMode.Create)))
+            {
+                foreach (App app in CDRBlob.Apps)
+                {
+                    //sw.WriteLine(SQLQuery.BuildInsertQueryFromType("app", app));
 
+                    foreach (AppVersion appv in app.Versions)
+                    {
+                        //sw.WriteLine(SQLQuery.BuildInsertQueryFromType("app_version", appv));
+                    }
+                
+                }
+
+                foreach (Sub sub in CDRBlob.Subs)
+                {
+                    sw.WriteLine(SQLQuery.BuildInsertQueryFromType("sub", sub));
+                }
+            }
         }
     }
 }
