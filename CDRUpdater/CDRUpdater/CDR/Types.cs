@@ -42,102 +42,132 @@ namespace CDRUpdater
     public class AppVersion
     {
         [BlobField(FieldKey = CDRAppVersionFields.eFieldDescription)]
+        [SqlColumn("description")]
         public string Description { get; set; }
 
         [BlobField(FieldKey = CDRAppVersionFields.eFieldVersionId)]
+        [SqlColumn("version_id")]
         public uint VersionID { get; set; }
 
         [BlobField(FieldKey = CDRAppVersionFields.eFieldIsNotAvailable)]
+        [SqlColumn("is_not_available")]
         public bool IsNotAvailable { get; set; }
 
         [BlobField(FieldKey = CDRAppVersionFields.eFieldLaunchOptionIdsRecord)]
+        [SqlColumn("launch_option_ids")]
         public List<int> LaunchOptionIDs { get; set; }
 
         [BlobField(FieldKey = CDRAppVersionFields.eFieldDepotEncryptionKey)]
+        [SqlColumn("depot_key")]
         public string DepotEncryptionKey { get; set; }
 
         [BlobField(FieldKey = CDRAppVersionFields.eFieldIsEncryptionKeyAvailable)]
+        [SqlColumn("is_encryption_key_available")]
         public bool IsEncryptionKeyAvailable { get; set; }
 
         [BlobField(FieldKey = CDRAppVersionFields.eFieldIsRebased)]
+        [SqlColumn("is_rebased")]
         public bool IsRebased { get; set; }
 
         [BlobField(FieldKey = CDRAppVersionFields.eFieldIsLongVersionRoll)]
+        [SqlColumn("is_long_version_roll")]
         public bool IsLongVersionRoll { get; set; }
     }
 
     public class AppFilesystem
     {
         [BlobField(FieldKey = CDRAppFilesystemFields.eFieldAppId)]
+        [SqlColumn("app_id_filesystem")]
         public uint AppID { get; set; }
 
         [BlobField(FieldKey = CDRAppFilesystemFields.eFieldMountName)]
+        [SqlColumn("mount_name")]
         public string MountName { get; set; }
 
         [BlobField(FieldKey = CDRAppFilesystemFields.eFieldIsOptional)]
+        [SqlColumn("is_optional")]
         public bool IsOptional { get; set; }
     }
 
     public class App
     {
         [BlobField(FieldKey = CDRAppRecordFields.eFieldAppId, Depth = 1)]
+        [SqlColumn("app_id")]
         public uint AppID { get; set; }
 
         [BlobField(FieldKey = CDRAppRecordFields.eFieldName, Depth = 1)]
+        [SqlColumn("name")]
         public string Name { get; set; }
 
         [BlobField(FieldKey = CDRAppRecordFields.eFieldInstallDirName, Depth = 1)]
+        [SqlColumn("install_dir")]
         public string InstallDirName { get; set; }
 
         [BlobField(FieldKey = CDRAppRecordFields.eFieldMinCacheFileSizeMB, Depth = 1)]
+        [SqlColumn("min_cache_size")]
         public uint MinCacheFileSizeMB { get; set; }
 
         [BlobField(FieldKey = CDRAppRecordFields.eFieldMaxCacheFileSizeMB, Depth = 1)]
+        [SqlColumn("max_cache_size")]
         public uint MaxCacheFileSizeMB { get; set; }
 
         [BlobField(FieldKey = CDRAppRecordFields.eFieldLaunchOptionsRecord, Complex = true, Depth = 1)]
+        [SqlColumn("launch_options")]
         public List<AppLaunchOption> LaunchOptions { get; set; }
 
         [BlobField(FieldKey = CDRAppRecordFields.eFieldOnFirstLaunch, Depth = 1)]
+        [SqlColumn("on_first_launch")]
         public int OnFirstLaunch { get; set; }
 
         [BlobField(FieldKey = CDRAppRecordFields.eFieldIsBandwidthGreedy, Depth = 1)]
+        [SqlColumn("is_bandwidth_greedy")]
         public bool IsBandwidthGreedy { get; set; }
 
         [BlobField(FieldKey = CDRAppRecordFields.eFieldVersionsRecord, Complex = true, Depth = 1)]
         public List<AppVersion> Versions { get; set; }
 
         [BlobField(FieldKey = CDRAppRecordFields.eFieldCurrentVersionId, Depth = 1)]
+        [SqlColumn("current_version_id")]
         public uint CurrentVersionID { get; set; }
 
         [BlobField(FieldKey = CDRAppRecordFields.eFieldFilesystemsRecord, Complex = true, Depth = 1)]
+        [SqlColumn("filesystems")]
         public List<AppFilesystem> Filesystems { get; set; }
 
         [BlobField(FieldKey = CDRAppRecordFields.eFieldTrickleVersionId, Depth = 1)]
+        [SqlColumn("trickle_version_id")]
         public int TrickleVersionID { get; set; }
 
         [BlobField(FieldKey = CDRAppRecordFields.eFieldUserDefinedRecord, Depth = 1)]
+        [SqlColumn("user_defined")]
         public Dictionary<string, string> UserDefined { get; set; }
 
         [BlobField(FieldKey = CDRAppRecordFields.eFieldBetaVersionPassword, Depth = 1)]
+        [SqlColumn("beta_version_password")]
         public string BetaVersionPassword { get; set; }
 
         [BlobField(FieldKey = CDRAppRecordFields.eFieldBetaVersionId, Depth = 1)]
+        [SqlColumn("beta_version_id")]
         public int BetaVersionID { get; set; }
 
         [BlobField(FieldKey = CDRAppRecordFields.eFieldLegacyInstallDirName, Depth = 1)]
+        [SqlColumn("legacy_install_dir")]
         public string LegacyInstallDirName { get; set; }
 
         [BlobField(FieldKey = CDRAppRecordFields.eFieldSkipMFPOverwrite, Depth = 1)]
+        [SqlColumn("skip_mfp_overwrite")]
         public bool SkipMFPOverwrite { get; set; }
 
         [BlobField(FieldKey = CDRAppRecordFields.eFieldUseFilesystemDvr, Depth = 1)]
+        [SqlColumn("use_filesystem_dvr")]
         public bool UseFilesystemDvr { get; set; }
 
         [BlobField(FieldKey = CDRAppRecordFields.eFieldManifestOnlyApp, Depth = 1)]
+        [SqlColumn("manifest_only")]
         public bool ManifestOnlyApp { get; set; }
 
         [BlobField(FieldKey = CDRAppRecordFields.eFieldAppOfManifestOnlyCache, Depth = 1)]
+        [SqlColumn("app_of_manifest_only")]
         public uint AppOfManifestOnlyCache { get; set; }
     }
 
@@ -177,72 +207,94 @@ namespace CDRUpdater
     public class Sub 
     {
         [BlobField( FieldKey = CDRSubRecordFields.eFieldSubId )]
+        [SqlColumn("sub_id")]
         public uint SubID { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldName )]
+        [SqlColumn("name")]
         public string Name { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldBillingType )]
+        [SqlColumn("billing_type")]
         public ESubscriptionBillingType BillingType { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldCostInCents )]
+        [SqlColumn("cost_in_cents")]
         public uint CostInCents { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldPeriodInMinutes )]
+        [SqlColumn("period_in_minutes")]
         public int PeriodInMinutes { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldAppIdsRecord )]
         public List<uint> AppIDs { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldOnSubscribeRunAppId )]
+        [SqlColumn("on_subscribe_run_app_id")]
         public int OnSubscribeRunAppID { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldOnSubscribeRunLaunchOptionIndex )]
+        [SqlColumn("on_subscribe_run_launch_option_index")]
         public int OnSubscribeRunLaunchOptionIndex { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldOptionalRateLimitRecord, Complex = true)]
+        [SqlColumn("rate_limits")]
         public List<SubRateLimit> RateLimits { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldDiscountsRecord, Complex = true )]
+        [SqlColumn("discounts")]
         public List<SubDiscount> Discounts { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldIsPreorder )]
+        [SqlColumn("is_preorder")]
         public bool IsPreorder { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldRequiresShippingAddress )]
+        [SqlColumn("requires_shipping_address")]
         public bool RequiresShippingAddress { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldDomesticCostInCents )]
+        [SqlColumn("domestic_cost_in_cents")]
         public uint DomesticCostInCents { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldInternationalCostInCents )]
+        [SqlColumn("international_cost_in_cents")]
         public uint InternationalCostInCents { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldRequiredKeyType )]
+        [SqlColumn("required_key_type")]
         public uint RequiredKeyType { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldIsCyberCafe )]
+        [SqlColumn("is_cyber_cafe")]
         public bool IsCyberCafe { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldGameCode )]
+        [SqlColumn("game_code")]
         public int GameCode { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldGameCodeDescription )]
+        [SqlColumn("game_code_description")]
         public string GameCodeDescription { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldIsDisabled )]
+        [SqlColumn("is_disabled")]
         public bool IsDisabled { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldRequiresCD )]
+        [SqlColumn("requires_cd")]
         public bool RequiresCD { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldTerritoryCode )]
+        [SqlColumn("territory_code")]
         public uint TerritoryCode { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldIsSteam3Subscription )]
+        [SqlColumn("is_steam3_subscription")]
         public bool IsSteam3Subscription { get; set; }
 
         [BlobField( FieldKey = CDRSubRecordFields.eFieldExtendedInfoRecord )]
+        [SqlColumn("extended_info")]
         public Dictionary<string, string> ExtendedInfo { get; set; }
     }
 
