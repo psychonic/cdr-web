@@ -5,6 +5,7 @@ using System.Text;
 using SteamKit2;
 using Jayrock.Json.Conversion;
 using System.Data;
+using System.IO;
 
 namespace CDRUpdater
 {
@@ -15,7 +16,7 @@ namespace CDRUpdater
         /*public static string BuildDataInsertFromType(object x)
         {
             Type otype = x.GetType();
-            Dictionary<string, string> sqlDict = new Dictionary<string, string>();
+            List<string> sqlDict = new List<string>();
 
             foreach (var field in otype.GetCachedPropertyInfo(SQLContext))
             {
@@ -33,8 +34,8 @@ namespace CDRUpdater
         public static void BuildDataInsertFromTypeWithChanges(object x, DataRow prev_data, int cdr_id, int prev_cdr_id, out string sql_data, out string sql_data_capture)
         {
             Type otype = x.GetType();
-            Dictionary<string, string> sqlDict = new Dictionary<string, string>();
-            Dictionary<string, string> sqlCaptureDict = new Dictionary<string, string>();
+            List<string> sqlDict = new List<string>();
+            List<string> sqlCaptureDict = new List<string>();
             int capture_count = -1;
 
             foreach (var field in otype.GetCachedPropertyInfo(SQLContext))
@@ -55,22 +56,22 @@ namespace CDRUpdater
 
                     if (value_current != type_value || capture_count < 0)
                     {
-                        sqlCaptureDict.Add(cattrib.Column, EscapeValue(value_current, inner_enclose));
+                        sqlCaptureDict.Add(EscapeValue(value_current, inner_enclose));
                         capture_count++;
                     }
                     else
                     {
-                        sqlCaptureDict.Add(cattrib.Column, @"\N");
+                        sqlCaptureDict.Add(@"\N");
                     }
                 }
 
                 type_value = EscapeValue(type_value, enclose);
 
-                sqlDict.Add(cattrib.Column, type_value);
+                sqlDict.Add(type_value);
 
             }
 
-            sql_data = String.Join("\t", sqlDict.Values);
+            sql_data = String.Join("\t", sqlDict);
 
             if (prev_data == null || capture_count <= 0)
             {
@@ -78,7 +79,67 @@ namespace CDRUpdater
                 return;
             }
 
-            sql_data_capture = String.Format("{0}\t{1}", prev_cdr_id, String.Join("\t", sqlCaptureDict.Values));
+            sql_data_capture = String.Format("{0}\t{1}", prev_cdr_id, String.Join("\t", sqlCaptureDict));
+        }
+
+        public static void BuildSubDataInsertFromType(string table, object x, DataRow prev_data, uint appID, int cdr_id, int prev_cdr_id, StreamWriter writer)
+        {
+            Type otype = x.GetType();
+            List<string> sqlDict = new List<string>();
+            bool newData = (prev_data == null);
+
+            foreach (var field in otype.GetCachedPropertyInfo(SQLContext))
+            {
+                SqlColumnAttribute cattrib = field.GetAttribute<SqlColumnAttribute>(SQLContext);
+
+                if (cattrib == null)
+                    continue;
+
+                bool enclose = false;
+                string type_value = GetStringValue(field.PropertyType, field.GetValue(x, null), true, out enclose);
+
+                bool inner_enclose = false;
+
+                if (!newData && CompareTranslateBool(GetStringValue(field.PropertyType, prev_data[cattrib.Column], false, out inner_enclose), type_value) == false)
+                {
+                    newData = true;
+                }
+
+                type_value = EscapeValue(type_value, enclose);
+
+                sqlDict.Add(type_value);
+            }
+
+            if (!newData)
+                return;
+
+            if (prev_data != null)
+            {
+                // close out current data
+                CloseoutRow(otype, prev_data, prev_cdr_id, writer);
+            }
+
+            writer.WriteLine("{0}\t{1}\t\\N\t{2}", appID, cdr_id, String.Join("\t", sqlDict));
+        }
+
+        public static void CloseoutRow(Type otype, DataRow row, int cdr_id_last, StreamWriter writer)
+        {
+            List<string> sqlDict = new List<string>();
+
+            foreach (var field in otype.GetCachedPropertyInfo(SQLContext))
+            {
+                SqlColumnAttribute cattrib = field.GetAttribute<SqlColumnAttribute>(SQLContext);
+
+                if (cattrib == null)
+                    continue;
+
+                bool enclose = false;
+                string type_value = GetStringValue(field.PropertyType, row[cattrib.Column], false, out enclose);
+
+                sqlDict.Add(EscapeValue(type_value, enclose));
+            }
+
+            writer.WriteLine("{0}\t{1}\t{2}\t{3}", row["app_id"], row["cdr_id"], cdr_id_last, String.Join("\t", sqlDict));
         }
 
         private static string GetStringValue(Type propType, object value, bool follow_types, out bool enclose)
@@ -123,6 +184,18 @@ namespace CDRUpdater
                 return clean; //'"' + clean + '"';
             else
                 return clean;
+        }
+
+        // pretty
+        private static bool CompareTranslateBool(string x, string y)
+        {
+            if (x.Equals(y))
+                return true;
+
+            if ((x == "False" || x == "True") && (x.Replace("True", "1").Replace("False", "0").Equals(y)))
+                return true;
+
+            return false;
         }
     }
 }

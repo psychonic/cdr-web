@@ -78,7 +78,7 @@ namespace CDRUpdater
     {
         [BlobField(FieldKey = CDRAppFilesystemFields.eFieldAppId)]
         [SqlColumn("app_id_filesystem")]
-        public uint AppID { get; set; }
+        public int AppID { get; set; }
 
         [BlobField(FieldKey = CDRAppFilesystemFields.eFieldMountName)]
         [SqlColumn("mount_name")]

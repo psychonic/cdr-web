@@ -4,7 +4,7 @@
 --
 -- Host: 127.0.0.1:3306
 
--- Generation Time: May 08, 2011 at 01:09 PM
+-- Generation Time: May 15, 2011 at 10:19 AM
 -- Server version: 5.5.11
 -- PHP Version: 5.3.6
 
@@ -43,11 +43,6 @@ CREATE TABLE `app` (
   PRIMARY KEY (`app_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `app`
---
-
-
 -- --------------------------------------------------------
 
 --
@@ -62,11 +57,6 @@ CREATE TABLE `apps_subs` (
   KEY `cdr_id` (`cdr_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `apps_subs`
---
-
-
 -- --------------------------------------------------------
 
 --
@@ -76,18 +66,13 @@ CREATE TABLE `apps_subs` (
 CREATE TABLE `app_filesystem` (
   `app_id` int(11) NOT NULL,
   `cdr_id` int(11) NOT NULL,
-  `cdr_id_last` int(11) NOT NULL,
+  `cdr_id_last` int(11) DEFAULT NULL,
   `app_id_filesystem` int(11) NOT NULL,
   `mount_name` varchar(255) NOT NULL,
   `is_optional` tinyint(1) NOT NULL,
-  PRIMARY KEY (`app_id`,`cdr_id`),
+  PRIMARY KEY (`app_id`,`cdr_id`,`app_id_filesystem`,`mount_name`),
   KEY `cdr_id_last` (`cdr_id_last`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `app_filesystem`
---
-
 
 -- --------------------------------------------------------
 
@@ -119,11 +104,6 @@ CREATE TABLE `app_state_capture` (
   PRIMARY KEY (`cdr_id`,`app_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `app_state_capture`
---
-
-
 -- --------------------------------------------------------
 
 --
@@ -133,7 +113,7 @@ CREATE TABLE `app_state_capture` (
 CREATE TABLE `app_version` (
   `app_id` int(11) NOT NULL,
   `cdr_id` int(11) NOT NULL,
-  `cdr_id_last` int(11) NOT NULL,
+  `cdr_id_last` int(11) DEFAULT NULL,
   `description` text NOT NULL,
   `version_id` int(11) NOT NULL,
   `is_not_available` tinyint(1) NOT NULL,
@@ -142,14 +122,9 @@ CREATE TABLE `app_version` (
   `is_encryption_key_available` tinyint(1) NOT NULL,
   `is_rebased` tinyint(1) NOT NULL,
   `is_long_version_roll` tinyint(1) NOT NULL,
-  PRIMARY KEY (`app_id`,`cdr_id`),
+  PRIMARY KEY (`app_id`,`cdr_id`,`version_id`),
   KEY `cdr_id_last` (`cdr_id_last`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `app_version`
---
-
 
 -- --------------------------------------------------------
 
@@ -164,12 +139,7 @@ CREATE TABLE `cdr` (
   `date_updated` datetime NOT NULL,
   `date_processed` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
---
--- Dumping data for table `cdr`
---
-
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=35 ;
 
 -- --------------------------------------------------------
 
@@ -203,11 +173,6 @@ CREATE TABLE `sub` (
   PRIMARY KEY (`sub_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `sub`
---
-
-
 -- --------------------------------------------------------
 
 --
@@ -240,8 +205,3 @@ CREATE TABLE `sub_state_capture` (
   `extended_info` text,
   PRIMARY KEY (`cdr_id`,`sub_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `sub_state_capture`
---
-
