@@ -22,7 +22,8 @@ namespace CDRUpdater
             DebugLog.Write("CDR updater running!\n");
 
             DebugLog.Write("Downloading CDR...\n");
-            /*byte[] cdr = null;
+
+            byte[] cdr = null;
             try
             {
                 byte[] hash = null;
@@ -40,35 +41,32 @@ namespace CDRUpdater
                 if (cdr == null || cdr.Length == 0)
                 {
                     DebugLog.Write("No new CDR. All done!\n\n");
-                    //return;
+                    return;
                 }
-                else
-                {
 
-                }
+                File.WriteAllBytes(CDRBLOB, cdr);
             }
             catch (Exception ex)
             {
                 DebugLog.Write("Unable to download CDR: {0}\n", ex.ToString());
                 return;
-            }*/
+            }
 
-            byte[] cdr = File.ReadAllBytes(CDRBLOB);
+            //byte[] cdr = File.ReadAllBytes("CDR.blob");
+            byte[] current_hash = CryptoHelper.SHAHash(cdr);
 
-                    byte[] current_hash = CryptoHelper.SHAHash(cdr);
+            string hash_hex = current_hash.Aggregate(new StringBuilder(),
+                       (sb, v) => sb.Append(v.ToString("x2"))
+                      ).ToString();
 
-                    string hash_hex = current_hash.Aggregate(new StringBuilder(), 
-                               (sb,v)=>sb.Append(v.ToString("x2"))
-                              ).ToString();
-
-                    try
-                    {
-                        File.WriteAllBytes(HASHFILE, current_hash);
-                    }
-                    catch (Exception ex2)
-                    {
-                        DebugLog.Write("Warning: Unable to write to hashfile: {0}\n", ex2.ToString());
-                    }
+            try
+            {
+                File.WriteAllBytes(HASHFILE, current_hash);
+            }
+            catch (Exception ex2)
+            {
+                DebugLog.Write("Warning: Unable to write to hashfile: {0}\n", ex2.ToString());
+            }
 
             DebugLog.Write("Parsing CDR...\n");
 
@@ -99,7 +97,7 @@ namespace CDRUpdater
             // insert CDR
             command = connection.CreateCommand();
 
-            // the current CDR is always the most recently processed, incase we delete CDRs
+            // the current CDR is always the most recently processed
             command.CommandText = "SELECT id FROM cdr ORDER BY date_processed DESC LIMIT 1";
 
             int prev_cdr_id = Convert.ToInt32(command.ExecuteScalar());
@@ -123,11 +121,13 @@ namespace CDRUpdater
 
             using (StreamWriter sw_app = new StreamWriter(new FileStream("app.data", FileMode.Create)))
             using (StreamWriter sw_app_capture = new StreamWriter(new FileStream("app_capture.data", FileMode.Create)))
+            using (StreamWriter sw_app_filesystem = new StreamWriter(new FileStream("app_filesystem.data", FileMode.Create)))
+            using (StreamWriter sw_app_version = new StreamWriter(new FileStream("app_version.data", FileMode.Create)))
             {
                 foreach (App app in CDRBlob.Apps)
                 {
                     command.CommandText = "SELECT * FROM app WHERE app_id = " + app.AppID;
-                    data.Clear();
+                    data.Reset();
                     adapter.Fill(data);
 
                     DataRow app_info = null;
@@ -147,17 +147,68 @@ namespace CDRUpdater
                         sw_app_capture.WriteLine(app_state_data);
                     }
 
+
+                    command.CommandText = "SELECT * FROM app_filesystem WHERE app_id = " + app.AppID + " AND cdr_id_last IS NULL";
+                    data.Reset();
+                    adapter.Fill(data);
+
+                    var fsData = data.Tables[0].AsEnumerable();
+
+                    foreach (AppFilesystem fs in app.Filesystems)
+                    {
+                        var row = fsData.Where(c => c["app_id_filesystem"].ToString() == fs.AppID.ToString() && c["mount_name"].ToString() == fs.MountName).ElementAtOrDefault(0);
+
+                        // duplicate, ex railworks
+                        if (row != null && row.RowState == DataRowState.Modified)
+                            continue;
+
+                        SQLQuery.BuildSubDataInsertFromType("app_filesystem", fs, row, app.AppID, cdr_id, prev_cdr_id, sw_app_filesystem);
+
+                        if (row != null)
+                            row.SetModified();
+                    }
+
+                    var toDelete = fsData.Where(c => c.RowState != DataRowState.Modified);
+
+                    foreach (DataRow row in toDelete)
+                    {
+                        SQLQuery.CloseoutRow(typeof(AppFilesystem), row, prev_cdr_id, sw_app_filesystem);
+                    }
+
+
+                    command.CommandText = "SELECT * FROM app_version WHERE app_id = " + app.AppID + " AND cdr_id_last IS NULL";
+                    data.Reset();
+                    adapter.Fill(data);
+
+                    var vData = data.Tables[0].AsEnumerable();
+
                     foreach (AppVersion appv in app.Versions)
                     {
-                        //sw.WriteLine(SQLQuery.BuildInsertQueryFromType("app_version", appv));
+                        var row = vData.Where(c => c["description"].ToString() == appv.Description && c["version_id"].ToString() == appv.VersionID.ToString()).ElementAtOrDefault(0);
+
+                        // duplicate, ex 501. I don't think this is related to rollbacks
+                        if (row != null && row.RowState == DataRowState.Modified)
+                            continue;
+
+                        SQLQuery.BuildSubDataInsertFromType("app_version", appv, row, app.AppID, cdr_id, prev_cdr_id, sw_app_version);
+
+                        if (row != null)
+                            row.SetModified();
                     }
+
+                    toDelete = fsData.Where(c => c.RowState != DataRowState.Modified);
+
+                    foreach (DataRow row in toDelete)
+                    {
+                        SQLQuery.CloseoutRow(typeof(AppVersion), row, prev_cdr_id, sw_app_version);
+                    }
+
 
                 }
             }
 
 
             // capture sub data
-            data = new DataSet();
 
             using (StreamWriter sw_sub = new StreamWriter(new FileStream("sub.data", FileMode.Create)))
             using (StreamWriter sw_sub_capture = new StreamWriter(new FileStream("sub_capture.data", FileMode.Create)))
@@ -166,7 +217,7 @@ namespace CDRUpdater
                 foreach (Sub sub in CDRBlob.Subs)
                 {
                     command.CommandText = "SELECT * FROM sub WHERE sub_id = " + sub.SubID;
-                    data.Clear();
+                    data.Reset();
                     adapter.Fill(data);
 
                     DataRow sub_info = null;
