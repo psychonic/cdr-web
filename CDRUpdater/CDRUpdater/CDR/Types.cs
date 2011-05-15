@@ -131,7 +131,6 @@ namespace CDRUpdater
         public uint CurrentVersionID { get; set; }
 
         [BlobField(FieldKey = CDRAppRecordFields.eFieldFilesystemsRecord, Complex = true, Depth = 1)]
-        [SqlColumn("filesystems")]
         public List<AppFilesystem> Filesystems { get; set; }
 
         [BlobField(FieldKey = CDRAppRecordFields.eFieldTrickleVersionId, Depth = 1)]

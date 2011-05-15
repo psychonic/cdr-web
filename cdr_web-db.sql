@@ -4,7 +4,7 @@
 --
 -- Host: 127.0.0.1:3306
 
--- Generation Time: May 15, 2011 at 10:19 AM
+-- Generation Time: May 15, 2011 at 01:20 PM
 -- Server version: 5.5.11
 -- PHP Version: 5.3.6
 
@@ -30,7 +30,6 @@ CREATE TABLE `app` (
   `on_first_launch` int(11) NOT NULL,
   `is_bandwidth_greedy` tinyint(1) NOT NULL,
   `current_version_id` int(11) NOT NULL,
-  `filesystems` text NOT NULL,
   `trickle_version_id` int(11) NOT NULL,
   `user_defined` text NOT NULL,
   `beta_version_password` varchar(255) NOT NULL,
@@ -114,15 +113,15 @@ CREATE TABLE `app_version` (
   `app_id` int(11) NOT NULL,
   `cdr_id` int(11) NOT NULL,
   `cdr_id_last` int(11) DEFAULT NULL,
-  `description` text NOT NULL,
+  `description` varchar(255) NOT NULL,
   `version_id` int(11) NOT NULL,
   `is_not_available` tinyint(1) NOT NULL,
   `launch_option_ids` text NOT NULL,
-  `depot_key` text NOT NULL,
+  `depot_key` varchar(32) NOT NULL,
   `is_encryption_key_available` tinyint(1) NOT NULL,
   `is_rebased` tinyint(1) NOT NULL,
   `is_long_version_roll` tinyint(1) NOT NULL,
-  PRIMARY KEY (`app_id`,`cdr_id`,`version_id`),
+  PRIMARY KEY (`app_id`,`cdr_id`,`description`,`version_id`),
   KEY `cdr_id_last` (`cdr_id_last`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -139,7 +138,7 @@ CREATE TABLE `cdr` (
   `date_updated` datetime NOT NULL,
   `date_processed` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=35 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 -- --------------------------------------------------------
 
