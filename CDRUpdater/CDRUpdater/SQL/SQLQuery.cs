@@ -176,7 +176,7 @@ namespace CDRUpdater
             return data;
         }
 
-        private static string EscapeValue(string input, bool enclose)
+        public static string EscapeValue(string input, bool enclose)
         {
             string clean = input.Replace(@"\", @"\\").Replace("\0", "\\0").Replace("\'", "\\\'").Replace("\"", "\\\"");
 

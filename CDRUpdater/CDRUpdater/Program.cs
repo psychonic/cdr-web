@@ -244,6 +244,26 @@ namespace CDRUpdater
                 }
             }
 
+            string[] files = new string[] { "app.data", "app_capture.data", "sub.data", "sub_capture.data", "app_filesystem.data", "app_version.data" };
+            string[] tables = new string[] { "app", "app_state_capture", "sub", "sub_state_capture", "app_filesystem", "app_version" };
+
+            for (int i = 0; i < files.Length; i++)
+            {
+                command.CommandText = String.Format("LOAD DATA INFILE '{0}' REPLACE INTO TABLE {1} LINES TERMINATED BY \"\r\n\"", SQLQuery.EscapeValue(Path.Combine(Environment.CurrentDirectory, files[i]), false), tables[i]);
+
+                command.ExecuteNonQuery();
+            }
+
+            files = new string[] { "apps_subs.data" };
+            tables = new string[] { "apps_subs" };
+
+            for (int i = 0; i < files.Length; i++)
+            {
+                command.CommandText = String.Format("LOAD DATA INFILE '{0}' IGNORE INTO TABLE {1} LINES TERMINATED BY \"\r\n\"", SQLQuery.EscapeValue(Path.Combine(Environment.CurrentDirectory, files[i]), false), tables[i]);
+
+                command.ExecuteNonQuery();
+            }
+
         }
     }
 }
