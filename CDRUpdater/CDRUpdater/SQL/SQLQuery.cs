@@ -79,7 +79,7 @@ namespace CDRUpdater
                 return;
             }
 
-            sql_data_capture = String.Format("{0}\t{1}", prev_cdr_id, String.Join("\t", sqlCaptureDict));
+            sql_data_capture = String.Format("{0}\t0\t{1}", prev_cdr_id, String.Join("\t", sqlCaptureDict));
         }
 
         public static void BuildSubDataInsertFromType(string table, object x, DataRow prev_data, uint appID, int cdr_id, int prev_cdr_id, StreamWriter writer)
