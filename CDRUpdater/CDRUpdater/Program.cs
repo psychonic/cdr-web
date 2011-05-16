@@ -52,7 +52,7 @@ namespace CDRUpdater
                 return;
             }
 
-            //byte[] cdr = File.ReadAllBytes("CDR.blob");
+            //byte[] cdr = File.ReadAllBytes(CDRBLOB);
             byte[] current_hash = CryptoHelper.SHAHash(cdr);
 
             string hash_hex = current_hash.Aggregate(new StringBuilder(),
@@ -102,9 +102,11 @@ namespace CDRUpdater
 
             int prev_cdr_id = Convert.ToInt32(command.ExecuteScalar());
 
-            command.CommandText = String.Format("INSERT INTO cdr (hash, version, date_updated, date_processed) VALUES ('{0}', {1}, '{2}', '{3}')",
+            command.CommandText = String.Format("INSERT INTO cdr (hash, version, date_updated, date_processed, app_count, sub_count) VALUES ('{0}', {1}, '{2}', '{3}', {4}, {5})",
                                                     hash_hex, CDRBlob.VersionNum, String.Format("{0:u}", CDRBlob.LastChangedExistingAppOrSubscriptionTime.ToDateTime()),
-                                                    String.Format("{0:u}", DateTime.Now));
+                                                    String.Format("{0:u}", DateTime.Now),
+                                                    CDRBlob.Apps.Count,
+                                                    CDRBlob.Subs.Count);
 
             command.ExecuteNonQuery();
 
@@ -145,6 +147,11 @@ namespace CDRUpdater
                     if (app_state_data != null)
                     {
                         sw_app_capture.WriteLine(app_state_data);
+                    }
+                    else if (app_info == null)
+                    {
+                        // capture created status
+                        sw_app_capture.WriteLine("{0}\t1\t{1}", prev_cdr_id, app.AppID.ToString());
                     }
 
 
@@ -235,6 +242,11 @@ namespace CDRUpdater
                     if (sub_state_data != null)
                     {
                         sw_sub_capture.WriteLine(sub_state_data);
+                    }
+                    else if (sub_info == null)
+                    {
+                        // capture created status
+                        sw_sub_capture.WriteLine("{0}\t1\t{1}", prev_cdr_id, sub.SubID.ToString());
                     }
 
                     foreach (int appid in sub.AppIDs)
