@@ -1,5 +1,5 @@
 <?php
-	    $this->Paginator->options(array('url' => $this->passedArgs));
+	    $this->Paginator->options(array('url' => array('id' => $reference_id)));
 ?>
 
 <table id="info">
@@ -27,8 +27,3 @@
 		}
 	?>
 </table> 
-
-<?php echo $this->Paginator->counter(); ?> <br />
-<?php echo $this->Paginator->numbers(); ?> <br />
-<?php echo $this->Paginator->prev('Previous', null, null); ?> &nbsp;
-<?php echo $this->Paginator->next('Next', null, null); ?> 

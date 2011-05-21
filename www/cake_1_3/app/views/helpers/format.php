@@ -10,6 +10,10 @@ class FormatHelper extends AppHelper {
 	}
 
 	function applink($html, $appid, $text = null, $user = null) {
+		if ($appid < 0) {
+			return ($text == null ? $appid : $text);
+		}
+		
 		$target = array('controller' => 'applications', 'action' => 'view', 'id' => $appid);
 		
 		if($user != null) {

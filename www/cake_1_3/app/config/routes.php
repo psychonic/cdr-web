@@ -37,7 +37,6 @@
 	
 	Router::connect('/apps/:id/*', array('controller' => 'applications', 'action' => 'view'), array('id' => '[\d]+', 'pass' => array('id')));
 	Router::connect('/apps/:action/:id/*', array('controller' => 'applications'), array('id' => '[\d]+', 'pass' => array('id')));
-	
 
 	Router::connect('/subs', array('controller' => 'subscriptions', 'action' => 'index'));
 	Router::connect('/subs/page/:page/*', array('controller' => 'subscriptions', 'action' => 'index'));

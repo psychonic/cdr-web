@@ -1,4 +1,3 @@
-<?php echo $this->Paginator->counter(); ?> <br />
 <table>
 	<?php 
 		echo $html->tableHeaders(
@@ -27,8 +26,3 @@
 		}
 	?>
 </table> 
-
-<?php echo $this->Paginator->counter(); ?> <br />
-<?php echo $this->Paginator->numbers(array('modulus' => null)); ?> <br />
-<?php echo $this->Paginator->prev('Previous', null, null); ?> &nbsp;
-<?php echo $this->Paginator->next('Next', null, null); ?> 
