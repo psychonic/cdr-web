@@ -124,6 +124,11 @@ a:hover {
 	padding-right: 5px;
 }
 
+.columnlite {
+	width: 15%;
+	text-align: center !important;
+}
+
 .subcontent {
 	border: 1px solid #E3ECFE;
 	border-radius: 5px;

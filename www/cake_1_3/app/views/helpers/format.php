@@ -33,12 +33,22 @@ class FormatHelper extends AppHelper {
 		return $html->link($text == null ? $subid : $text, $target);
 	}
 	
-	function column($key) {
-		return array(__($key, true), array('class' => 'column'));
+	function cdrlink($html, $subid, $text = null, $user = null) {
+		$target = array('controller' => 'contentrecords', 'action' => 'view', 'id' => $subid);
+		
+		if($user != null) {
+			$target = array_merge($target, $user);
+		}
+		
+		return $html->link($text == null ? $subid : $text, $target);
 	}
 	
-	function columnLiteral($key) {
-		return array($key, array('class' => 'column'));
+	function column($key, $class='column') {
+		return array(__($key, true), array('class' => $class));
+	}
+	
+	function columnLiteral($key, $class='column') {
+		return array($key, array('class' => $class));
 	}
 	
 	function columnLink($key, $link) {
