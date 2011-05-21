@@ -171,3 +171,6 @@
 2011-05-21 10:08:15 Debug: Notice (8): Undefined index: AppFilesystem in [C:\Users\Azu\Documents\CDR\www\cake_1_3\app\views\applications\view.ctp, line 59]
 2011-05-21 10:08:16 Debug: Notice (8): Undefined index: AppFilesystem in [C:\Users\Azu\Documents\CDR\www\cake_1_3\app\views\applications\view.ctp, line 59]
 2011-05-21 10:08:16 Debug: Notice (8): Undefined index: AppFilesystem in [C:\Users\Azu\Documents\CDR\www\cake_1_3\app\views\applications\view.ctp, line 59]
+2011-05-21 10:43:50 Debug: Notice (8): Undefined variable: sub in [C:\Users\Azu\Documents\CDR\www\cake_1_3\app\views\subscriptions\apps.ctp, line 22]
+2011-05-21 10:44:00 Debug: Notice (8): Undefined variable: sub in [C:\Users\Azu\Documents\CDR\www\cake_1_3\app\views\subscriptions\apps.ctp, line 22]
+2011-05-21 10:54:19 Debug: Notice (8): Undefined index: AppStateCapture in [C:\Users\Azu\Documents\CDR\www\cake_1_3\app\controllers\subscriptions_controller.php, line 44]

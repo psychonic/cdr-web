@@ -415,6 +415,7 @@ class DboSource extends DataSource {
 				$out[] = $first;
 			}
 			while ($this->hasResult() && $item = $this->fetchResult()) {
+		
 				$this->fetchVirtualField($item);
 				$out[] = $item;
 			}
@@ -772,7 +773,7 @@ class DboSource extends DataSource {
  * @param integer $recursive Number of levels of association
  * @return mixed boolean false on error/failure.  An array of results on success.
  */
-	function read(&$model, $queryData = array(), $recursive = null) {
+	function read(&$model, $queryData = array(), $recursive = null) {		
 		$queryData = $this->__scrubQueryData($queryData);
 
 		$null = null;
@@ -821,7 +822,7 @@ class DboSource extends DataSource {
 		$query = $this->generateAssociationQuery($model, $null, null, null, null, $queryData, false, $null);
 
 		$resultSet = $this->fetchAll($query, $model->cacheQueries, $model->alias);
-
+				
 		if ($resultSet === false) {
 			$model->onError();
 			return false;
@@ -861,6 +862,7 @@ class DboSource extends DataSource {
 		if (!is_null($recursive)) {
 			$model->recursive = $_recursive;
 		}
+		
 		return $resultSet;
 	}
 
