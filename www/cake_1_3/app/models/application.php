@@ -35,12 +35,17 @@ class Application extends AppModel {
 			),
 		'AppVersion' =>
 			array (
-					'className'				=> 'AppVersion',
+					'className'			=> 'AppVersion',
 					'foreignKey'			=> 'app_id',
 					'order'					=> 'version_id',
 					'conditions'			=> array('`AppVersion`.`cdr_id_last`' => null)
+			),
+		'AppStateCapture' =>
+			array (
+					'className'			=> 'AppStateCapture',
+					'foreignKey'			=> 'app_id',
+					'order'					=> 'cdr_id'
 			)
-	
 	);
 }
 

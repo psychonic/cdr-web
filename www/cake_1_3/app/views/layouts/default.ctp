@@ -63,9 +63,9 @@
 		?>
 		<div id="submenu_container">
 		<?php
-				foreach($layout_menuitems as $text => $action) {
+				foreach($layout_menuitems as $action) {
 		?>
-		<div class="submenu"> <?php echo $html->link($text, array('controller' => 'applications', 'action' => $action, 'id' => $reference_id), array('class' => 'noborder')); ?> </div>
+		<div class="submenu"> <?php echo $html->link($action, array('controller' => 'applications', 'action' => $action, 'id' => $reference_id), array('class' => 'noborder')); ?> </div>
 		<?php
 				}
 		?>

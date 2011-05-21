@@ -5,21 +5,20 @@
 <table id="info">
 	<?php 
 		echo $html->tableHeaders(
-									array($this->Paginator->sort('Sub ID', 'sub_id'), 
-											$this->Paginator->sort('Name', 'name')
+									array('CDR ID', 
+											'Previous State'
 										)
 							); 
 	?>
 
 	<?php
 
-		foreach($sub_data as $SubsMany) {
-			
-			$sub = $SubsMany['Subscription'];
+		foreach($hist_data as $changes) {
 			
 			echo $html->tableCells(
 									array(
-										array($format->columnLiteral($sub['sub_id']), $format->sublink($html, $sub['sub_id'], $sub['name']))
+										array($format->columnLiteral($format->applink($html, $reference_id, $changes[0], array('cdr_id'=>$changes[0]))),
+												implode(', ',$changes[1]))
 									),
 									null,
 									array('class' => 'alt')
