@@ -22,6 +22,7 @@ class ApplicationsController extends AppController
 	
 	
 	function view($id = null) {
+
 		$this->Application->unbindModel(array('hasAndBelongsToMany' => array('Subscription'))); // don't grab expensive assocation
 		$this->Application->unbindModel(array('hasMany' => array('AppStateCapture')));
 		
