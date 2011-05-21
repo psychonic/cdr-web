@@ -45,11 +45,7 @@ class FormatHelper extends AppHelper {
 		return array(__($key, true) . ' (' . $link . ')', array('class' => 'column'));
 	}
 	
-	function tostring($value) {
-		if(is_bool($value)) {
+	function boolstring($value) {
 			return $value ? 'true' : 'false';
-		}
-		
-		return (string)$value;
 	}
 }

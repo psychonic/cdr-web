@@ -35,7 +35,7 @@ class ApplicationsController extends AppController
 		$this->Application->app_id = $id;
 		$data = $this->Application->read();
 		
-		var_dump($data);
+		//var_dump($data);
 		
 		// build data to fit old CDR if set
 		// this is done in reverse to get the oldest value for the cdr we want, compared to the history page which is a descending list of all captures

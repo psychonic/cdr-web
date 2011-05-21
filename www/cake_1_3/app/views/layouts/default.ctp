@@ -92,12 +92,9 @@
 			
 			<?php echo $this->Paginator->counter(); ?> <br />
 			<?php echo $this->Paginator->numbers(array('modulus' => null)); ?> <br />
-<!--			<?php echo $this->Paginator->prev('Previous', null, null); ?> &nbsp;
-			<?php 
-					echo $this->Paginator->next('Next', null, null);
+			<?php
 				}
 			?>
--->
 		</div>
 	</div>
 

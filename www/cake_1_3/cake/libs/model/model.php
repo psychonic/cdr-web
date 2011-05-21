@@ -2132,7 +2132,7 @@ class Model extends Overloadable {
 		}
 
 		$this->findQueryType = null;
-
+		
 		if ($type === 'all') {
 			return $results;
 		} else {

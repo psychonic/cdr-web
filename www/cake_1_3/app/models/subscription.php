@@ -25,6 +25,15 @@ class Subscription extends AppModel {
 					'insertQuery'			=> ''
 			)
 	);
+	
+	var $hasMany = array (
+		'SubStateCapture' =>
+			array (
+					'className'			=> 'SubStateCapture',
+					'foreignKey'			=> 'sub_id',
+					'order'					=> 'cdr_id'
+			)
+	);
 }
 
 ?>
