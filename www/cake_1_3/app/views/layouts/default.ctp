@@ -63,9 +63,9 @@
 		?>
 		<div id="submenu_container">
 		<?php
-				foreach($layout_menuitems as $action) {
+				foreach($layout_menuitems as $text => $action) {
 		?>
-		<div class="submenu"> <?php echo $html->link($action, array('controller' => 'applications', 'action' => $action, 'id' => $reference_id), array('class' => 'noborder')); ?> </div>
+		<div class="submenu"> <?php echo $html->link((is_int($text)?$action:$text), array('action' => $action, 'id' => $reference_id), array('class' => 'noborder')); ?> </div>
 		<?php
 				}
 		?>
@@ -75,7 +75,29 @@
 		?>
 		
 		<div id="content">
-			<?php echo $content_for_layout ?>
+			<?php 
+				if(isset($this->Paginator)) {
+						$this->Paginator->options(array('url' => $this->passedArgs));
+						
+						echo $this->Paginator->counter();
+			?>
+			<br />
+			<?php 
+				}
+				
+				echo $content_for_layout;
+				
+				if(isset($this->Paginator)) {
+			?>
+			
+			<?php echo $this->Paginator->counter(); ?> <br />
+			<?php echo $this->Paginator->numbers(array('modulus' => null)); ?> <br />
+<!--			<?php echo $this->Paginator->prev('Previous', null, null); ?> &nbsp;
+			<?php 
+					echo $this->Paginator->next('Next', null, null);
+				}
+			?>
+-->
 		</div>
 	</div>
 

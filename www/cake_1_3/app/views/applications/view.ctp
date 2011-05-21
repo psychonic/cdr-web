@@ -2,6 +2,8 @@
 	<?php
 		$app_info = $data['Application'];
 		
+		var_dump($app_info);
+		
 		$launchBuffer = '';
 		$versionBuffer = '';
 		$fsBuffer = '';
@@ -27,7 +29,7 @@
 		
 		if($show_version) {
 		
-			$versionLink = $format->applink($html, $app_info['app_id'], 'hide');
+			$versionLink = $format->applink($html, $app_info['app_id'], 'hide', array('cdr_id' => $reference_cdr));
 			
 			foreach($data['AppVersion'] as $version) {
 				$versionBuffer .= '<table class="subcontent">';
@@ -49,7 +51,7 @@
 			}
 		
 		} else {
-			$versionLink = $format->applink($html, $app_info['app_id'], 'show', array('show_version' => 1));
+			$versionLink = $format->applink($html, $app_info['app_id'], 'show', array('show_version' => 1, 'cdr_id' => $reference_cdr));
 			$versionBuffer = 'Hidden';
 		}
 		
@@ -69,11 +71,15 @@
 		}
 		
 		// optimize this?
-		$userAppLinks = array('primarycache', 'dependantOnApp', 'vacmodulecache', 'vacmacmodulecache', 'DemoOfAppID', 'MustOwnAppToPurchase');
+		$userAppLinks = array('primarycache', 'primarycache_mac', 'primarycache_macos', 'dependantOnApp', 'vacmodulecache', 'vacmacmodulecache', 'DemoOfAppID', 'DLCForAppID', 'MustOwnAppToPurchase');
 		
 		foreach($data['UserDefined'] as $key => $value) {
 			if(in_array($key, $userAppLinks)) {
 				$value = $format->applink($html, $value);
+			}
+			
+			if(substr($value,0,7) == 'http://') {
+				$value = '<a href="' . $value . '">' . $value . '</a>';
 			}
 			
 			$userBuffer .= $key . ' = ' . $value . '<br />';

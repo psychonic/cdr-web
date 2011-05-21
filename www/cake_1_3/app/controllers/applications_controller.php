@@ -34,6 +34,31 @@ class ApplicationsController extends AppController
 		$this->Application->app_id = $id;
 		$data = $this->Application->read();
 		
+		var_dump($data);
+		
+		// build data to fit old CDR if set
+		// this is done in reverse to get the oldest value for the cdr we want, compared to the history page which is a descending list of all captures
+		$cdr_want = null;
+		
+		if(isset($this->passedArgs['cdr_id'])) {
+			$cdr_want = $this->passedArgs['cdr_id'];
+			
+			$history = $this->Application->AppStateCapture->find('all', array('conditions' => array('app_id' => $id, 'cdr_id >=' => $cdr_want), 'order' => 'cdr_id ASC'));
+
+			foreach($data['Application'] as $key => $value)
+			{
+				foreach($history as $hist_data) {
+					$hcapture = $hist_data['AppStateCapture'];
+					
+					if($hcapture[$key] != NULL && $data['Application'][$key] != $hcapture[$key]) {
+						$data['Application'][$key] = $hcapture[$key];
+						break;
+					}
+				}
+			}
+		}
+		
+		
 		// make this a behavior
 		$data['LaunchOptions'] = json_decode($data['Application']['launch_options'], true);
 		$data['UserDefined'] = json_decode($data['Application']['user_defined'], true);
@@ -48,8 +73,9 @@ class ApplicationsController extends AppController
 		$this->set('show_version', $wantVersions);
 		
 		$this->set('title_for_layout', $data['Application']['app_id'] . ' - ' . $data['Application']['name']);
-		$this->set('layout_menuitems', array('view', 'subs', 'hist'));
+		$this->set('layout_menuitems', array('view', 'subs', 'history' => 'hist'));
 		$this->set('reference_id', $id);
+		$this->set('reference_cdr', $cdr_want);
 	}
 	
 	
@@ -70,7 +96,7 @@ class ApplicationsController extends AppController
 		$this->set('sub_data', $pagination);
 		
 		$this->set('title_for_layout', $data['Application']['app_id'] . ' - ' . $data['Application']['name']);
-		$this->set('layout_menuitems', array('view', 'subs', 'hist'));
+		$this->set('layout_menuitems', array('view', 'subs', 'history' => 'hist'));
 		$this->set('reference_id', $id);
 	}
 	
@@ -113,7 +139,7 @@ class ApplicationsController extends AppController
 		$this->set('hist_data', $hist_changes);
 		
 		$this->set('title_for_layout', $data['Application']['app_id'] . ' - ' . $data['Application']['name']);
-		$this->set('layout_menuitems', array('view', 'subs', 'hist'));
+		$this->set('layout_menuitems', array('view', 'subs', 'history' => 'hist'));
 		$this->set('reference_id', $id);
 	}
 }
