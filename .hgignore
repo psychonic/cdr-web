@@ -2,3 +2,4 @@ glob:*.suo
 glob:*.blob
 glob:Debug
 glob:UniServer
+glob:tmp
