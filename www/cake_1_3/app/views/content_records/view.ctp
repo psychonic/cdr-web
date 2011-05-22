@@ -7,7 +7,7 @@
 		$subAddBuffer = '';
 		$subChangeBuffer = '';
 		
-		function bufferApps(&$format, &$html, &$apps, &$buffer) {
+		function bufferApps(&$format, &$html, &$apps, &$names, &$buffer) {
 			$c = count($apps);
 			
 			if($c == 0) {
@@ -15,16 +15,16 @@
 				return;
 			}
 			
-			$linkTemplate = $format->applink($html, '0');
+			$linkTemplate = str_replace('0', '%s', $format->applink($html, '0'));
 			
 			foreach($apps as $app) {
 				$app_info =& $app['AppStateCapture'];
-				$buffer .= str_replace('0', $app_info['app_id'], $linkTemplate);
-				if($c-- > 1) $buffer .= ', ';
+				$buffer .= sprintf($linkTemplate, $app_info['app_id'], ($names != null ?  $app_info['app_id'] . ' ('  . $names[$app_info['app_id']] . ')' : $app_info['app_id']));
+				if($c-- > 1) $buffer .= ',&nbsp; &nbsp;';
 			}
 		}
 		
-		function bufferSubs(&$format, &$html, &$subs, &$buffer) {
+		function bufferSubs(&$format, &$html, &$subs, &$names, &$buffer) {
 			$c = count($subs);
 			
 			if($c == 0) {
@@ -32,19 +32,19 @@
 				return;
 			}
 			
-			$linkTemplate = $format->sublink($html, '0');
+			$linkTemplate = str_replace('0', '%s', $format->sublink($html, '0'));
 			
 			foreach($subs as $sub) {
 				$sub_info =& $sub['SubStateCapture'];
-				$buffer .= str_replace('0', $sub_info['sub_id'], $linkTemplate);
-				if($c-- > 1) $buffer .= ', ';
+				$buffer .= sprintf($linkTemplate, $sub_info['sub_id'], ($names != null ?  $sub_info['sub_id'] . ' ('  . $names[$sub_info['sub_id']] . ')' : $sub_info['sub_id']));
+				if($c-- > 1) $buffer .= ',&nbsp; &nbsp;';
 			}
 		}
 		
-		bufferApps($format, $html, $appstate_created, $appAddBuffer);
-		bufferApps($format, $html, $appstate_modified, $appChangeBuffer);
-		bufferSubs($format, $html, $substate_created, $subAddBuffer );
-		bufferSubs($format, $html, $substate_modified, $subChangeBuffer );
+		bufferApps($format, $html, $appstate_created, $appnames, $appAddBuffer);
+		bufferApps($format, $html, $appstate_modified, $appnames, $appChangeBuffer);
+		bufferSubs($format, $html, $substate_created, $subnames, $subAddBuffer );
+		bufferSubs($format, $html, $substate_modified, $subnames, $subChangeBuffer );
 		
 		echo $html->tableCells(
 						array(

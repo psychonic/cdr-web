@@ -31,20 +31,18 @@
 	Router::connect('/', array('controller' => 'pages', 'action' => 'display', 'home'));
 	Router::connect('/about', array('controller' => 'pages', 'action' => 'display', 'about'));
 
+	function routeStyles($controller, $shorthand) {
+		Router::connect("/${shorthand}", array('controller' => $controller, 'action' => 'index'));
+		Router::connect("/${shorthand}/page/:page/*", array('controller' => $controller, 'action' => 'index'));
 	
-	Router::connect('/apps', array('controller' => 'applications', 'action' => 'index'));
-	Router::connect('/apps/page/:page/*', array('controller' => 'applications', 'action' => 'index'));
+		Router::connect("/${shorthand}/:id/*", array('controller' => $controller, 'action' => 'view'), array('id' => '[\d]+', 'pass' => array('id')));
+		Router::connect("/${shorthand}/:action/:id/*", array('controller' => $controller), array('id' => '[\d]+', 'pass' => array('id')));
+	}
 	
-	Router::connect('/apps/:id/*', array('controller' => 'applications', 'action' => 'view'), array('id' => '[\d]+', 'pass' => array('id')));
-	Router::connect('/apps/:action/:id/*', array('controller' => 'applications'), array('id' => '[\d]+', 'pass' => array('id')));
+	routeStyles('applications', 'apps');
+	routeStyles('subscriptions', 'subs');
+	routeStyles('contentrecords', 'cdr');
 
-	Router::connect('/subs', array('controller' => 'subscriptions', 'action' => 'index'));
-	Router::connect('/subs/page/:page/*', array('controller' => 'subscriptions', 'action' => 'index'));
-	
-	Router::connect('/subs/:id/*', array('controller' => 'subscriptions', 'action' => 'view'), array('id' => '[\d]+', 'pass' => array('id')));
-	Router::connect('/subs/:action/:id/*', array('controller' => 'subscriptions'), array('id' => '[\d]+', 'pass' => array('id')));
-	
-	
 /**
  * ...and connect the rest of 'Pages' controller's urls.
  */

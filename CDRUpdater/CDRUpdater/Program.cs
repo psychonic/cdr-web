@@ -98,7 +98,7 @@ namespace CDRUpdater
             command = connection.CreateCommand();
 
             // the current CDR is always the most recently processed
-            command.CommandText = "SELECT id FROM cdr ORDER BY date_processed DESC LIMIT 1";
+            command.CommandText = "SELECT cdr_id FROM cdr ORDER BY date_processed DESC LIMIT 1";
 
             int prev_cdr_id = Convert.ToInt32(command.ExecuteScalar());
 
