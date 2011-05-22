@@ -15,8 +15,8 @@ class SubscriptionsController extends AppController
 	
 	function index() {
 		$this->Subscription->unbindModel(array('hasAndBelongsToMany' => array('Application')), false); // don't grab expensive assocation
-		$this->Subscription->unbindModel(array('hasMany' => array('SubStateCapture')));
-				
+		$this->Subscription->unbindModel(array('hasMany' => array('SubStateCapture')), false);
+		
 		$this->set('data', $this->paginate('Subscription'));
 	}
 	

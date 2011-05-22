@@ -92,6 +92,7 @@ class ApplicationsController extends AppController
 		$this->Application->unbindModel(array('hasMany' => array('AppFilesystem', 'AppVersion','AppStateCapture')), false);
 		
 		$this->Application->Subscription->unbindModel(array('hasAndBelongsToMany' => array('Application')), false);
+		$this->Application->Subscription->unbindModel(array('hasMany' => array('SubStateCapture')), false);
 		$this->Application->Subscription->bindModel(array('hasOne'=>array('AppsSubs')), false);
 		
 		$this->Application->app_id = $id;
