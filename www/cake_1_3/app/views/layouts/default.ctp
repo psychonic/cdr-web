@@ -40,7 +40,7 @@
 				<div class="stack">
 					<h3>lists</h3>
 					<ul>
-						<li><?php echo $this->Html->link(__('cdr', true), '/'); ?></li>
+						<li><?php echo $this->Html->link(__('cdr', true), array('controller' => 'contentrecords', 'action' => 'index')); ?></li>
 						<li><?php echo $this->Html->link(__('apps', true), array('controller' => 'applications', 'action' => 'index')); ?></li>
 						<li><?php echo $this->Html->link(__('subs', true), array('controller' => 'subscriptions', 'action' => 'index')); ?></li>
 					</ul>

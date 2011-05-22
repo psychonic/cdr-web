@@ -105,18 +105,17 @@ class SubscriptionsController extends AppController
 			$changed = array();
 			
 			if($hcapture['created']) {
-				$changed[] = 'Created';
+				break;
 			} else {
 				foreach($hist as $key => $value) {
 				
 					if($hcapture[$key] != null && $key != 'sub_id') {
 						$changed[] = $key . ' = ' . $hcapture[$key];
-					}
-					
+					}		
 				}
+
+				$hist_changes[] = array($hcapture['cdr_id'], $changed);
 			}
-			
-			$hist_changes[] = array($hcapture['cdr_id'], $changed);
 		}
 		
 		$this->set('data', $data);

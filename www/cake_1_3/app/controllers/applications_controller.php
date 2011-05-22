@@ -32,6 +32,13 @@ class ApplicationsController extends AppController
 			$this->Application->unbindModel(array('hasMany' => array('AppVersion')));
 		}
 		
+		if(isset($this->passedArgs['cdr_id'])) {
+			$cdr_want = $this->passedArgs['cdr_id'];
+						
+			$this->Application->bindModel(array('hasMany' => array('AppVersion' => array('conditions' => array('cdr_id <=' => (int)$cdr_want, 'OR' => array('cdr_id_last >=' => (int)$cdr_want, 'cdr_id_last' => null)), 'order' => 'version_id'))), false);
+			$this->Application->bindModel(array('hasMany' => array('AppFilesystem' => array('conditions' => array('cdr_id <=' => (int)$cdr_want, 'OR' => array('cdr_id_last >=' => (int)$cdr_want, 'cdr_id_last' => null))))), false);
+		}
+			
 		$this->Application->app_id = $id;
 		$data = $this->Application->read();
 		
@@ -122,18 +129,17 @@ class ApplicationsController extends AppController
 			$changed = array();
 			
 			if($hcapture['created']) {
-				$changed[] = 'Created';
+				break;
 			} else {
-				foreach($hist as $key => $value) {
 				
+				foreach($hist as $key => $value) {
 					if($hcapture[$key] != null && $key != 'app_id') {
 						$changed[] = $key . ' = ' . $hcapture[$key];
 					}
-					
 				}
+				
+				$hist_changes[] = array($hcapture['cdr_id'], $changed);
 			}
-			
-			$hist_changes[] = array($hcapture['cdr_id'], $changed);
 		}
 		
 		$this->set('data', $data);
