@@ -3,37 +3,35 @@
 class Subscription extends AppModel {
 	var $name = 'Subscription';
 	
+	var $actsAs = array('search');
+	
 	var $useTable = 'sub';
 	var $primaryKey = 'sub_id';
 	var $displayField = 'name';
 	
-	var $hasAndBelongsToMany = array(
-		'Application' =>
-			array(
-					'className'				=> 'Application',
-					'joinTable'				=> 'apps_subs',
-					'foreign_key'			=> 'sub_id',
-					'associationForeignKey' => 'app_id',
-					'unique'				=> false,
-					'conditions'			=> '',
-					'fields'				=> array('app_id', 'name'),
-					'order'					=> '',
-					'limit'					=> '',
-					'offset'				=> '',
-					'finderQuery'			=> '',
-					'deleteQuery'			=> '',
-					'insertQuery'			=> ''
-			)
-	);
+	var $cdr_target;
+
+	function findCapture() {
+			return $this->SubStateCapture->find('all', array('conditions' => array('sub_id' => $this->sub_id, 'cdr_id >=' => $this->cdr_target), 'order' => 'cdr_id ASC'));
+	}
 	
-	var $hasMany = array (
-		'SubStateCapture' =>
-			array (
-					'className'			=> 'SubStateCapture',
-					'foreignKey'			=> 'sub_id',
-					'order'					=> 'cdr_id'
-			)
-	);
+	function bindCapture() {
+		$this->linkModel(array('SubStateCapture'));
+	}
+	
+	function bindMany() {
+		$this->linkModel(array('AppsSubs', 'Application'));
+		
+		$this->Application->bindModel(array('hasOne'=>array('AppsSubs')), false);
+	}
+	
+	function linkModel($model) {
+		if(is_array($model)) {
+			foreach($model as $m) $this->linkModel($m);
+		} else {
+			$this->{$model} = ClassRegistry::init(array('class' => $model, 'alias' => $model));
+		}
+	}
 }
 
 ?>

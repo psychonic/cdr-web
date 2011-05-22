@@ -14,44 +14,32 @@ class ApplicationsController extends AppController
 		);
 	
 	function index() {
-		$this->Application->unbindModel(array('hasAndBelongsToMany' => array('Subscription')), false); // don't grab expensive assocation
-		$this->Application->unbindModel(array('hasMany' => array('AppFilesystem', 'AppVersion','AppStateCapture')), false);
-		
 		$this->set('data', $this->paginate('Application'));
 	}
 	
 	
 	function view($id = null) {
-
-		$this->Application->unbindModel(array('hasAndBelongsToMany' => array('Subscription'))); // don't grab expensive assocation
-		$this->Application->unbindModel(array('hasMany' => array('AppStateCapture')));
-		
 		$wantVersions = isset($this->passedArgs['show_version']) && $this->passedArgs['show_version'] == true;
 		
-		if(!$wantVersions) {
-			$this->Application->unbindModel(array('hasMany' => array('AppVersion')));
-		}
-		
+		$cdr_want = null;
+			
 		if(isset($this->passedArgs['cdr_id'])) {
 			$cdr_want = $this->passedArgs['cdr_id'];
-						
-			$this->Application->bindModel(array('hasMany' => array('AppVersion' => array('conditions' => array('cdr_id <=' => (int)$cdr_want, 'OR' => array('cdr_id_last >=' => (int)$cdr_want, 'cdr_id_last' => null)), 'order' => 'version_id'))), false);
-			$this->Application->bindModel(array('hasMany' => array('AppFilesystem' => array('conditions' => array('cdr_id <=' => (int)$cdr_want, 'OR' => array('cdr_id_last >=' => (int)$cdr_want, 'cdr_id_last' => null))))), false);
-		}
 			
+			$this->Application->cdr_target = $cdr_want;
+			$this->Application->bindCapture();
+		}
+		
+		$this->Application->bindImmediate($wantVersions);
+		
 		$this->Application->app_id = $id;
 		$data = $this->Application->read();
-		
-		//var_dump($data);
-		
+
 		// build data to fit old CDR if set
 		// this is done in reverse to get the oldest value for the cdr we want, compared to the history page which is a descending list of all captures
-		$cdr_want = null;
 		
-		if(isset($this->passedArgs['cdr_id'])) {
-			$cdr_want = $this->passedArgs['cdr_id'];
-			
-			$history = $this->Application->AppStateCapture->find('all', array('conditions' => array('app_id' => $id, 'cdr_id >=' => $cdr_want), 'order' => 'cdr_id ASC'));
+		if(isset($cdr_want)) {
+			$history = $this->Application->findCapture();
 
 			foreach($data['Application'] as $key => $value)
 			{
@@ -65,7 +53,6 @@ class ApplicationsController extends AppController
 				}
 			}
 		}
-		
 		
 		// make this a behavior
 		$data['LaunchOptions'] = json_decode($data['Application']['launch_options'], true);
@@ -88,12 +75,7 @@ class ApplicationsController extends AppController
 	
 	
 	function subs($id = null) {
-		$this->Application->unbindModel(array('hasAndBelongsToMany' => array('Subscription')), false);
-		$this->Application->unbindModel(array('hasMany' => array('AppFilesystem', 'AppVersion','AppStateCapture')), false);
-		
-		$this->Application->Subscription->unbindModel(array('hasAndBelongsToMany' => array('Application')), false);
-		$this->Application->Subscription->unbindModel(array('hasMany' => array('SubStateCapture')), false);
-		$this->Application->Subscription->bindModel(array('hasOne'=>array('AppsSubs')), false);
+		$this->Application->bindMany();
 		
 		$this->Application->app_id = $id;
 		$data = $this->Application->read();
@@ -111,8 +93,7 @@ class ApplicationsController extends AppController
 	
 	
 	function hist($id = null) {
-		$this->Application->unbindModel(array('hasAndBelongsToMany' => array('Subscription')), false);
-		$this->Application->unbindModel(array('hasMany' => array('AppFilesystem', 'AppVersion','AppStateCapture')), false);
+		$this->Application->bindCapture();
 		
 		$this->Application->app_id = $id;
 		$data = $this->Application->read();
