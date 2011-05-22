@@ -123,23 +123,37 @@ class ApplicationsController extends AppController
 		$hist = $data['Application'];
 		$hist_changes = array();
 		
-		foreach($hist_data as $capture)
-		{
-			$hcapture = $capture['AppStateCapture'];
+		$this->LoadModel('ContentRecord');
+		$topCDR = $this->ContentRecord->top($hist_data[0]['AppStateCapture']['cdr_id']);
+		
+		// of the columns that changed in a CDR, grab the values from a newer CDR and display the newer CDR, this would show newest values
+		// iterate through, build historical state, display the columns that changed in the (next, older) CDR
+		for($i = -1; $i < count($hist_data) - 1; $i++) {
 			$changed = array();
+			$hcapture = null;
+			$cdr_id = null;
 			
-			if($hcapture['created']) {
-				break;
+			if($i == -1) {
+				$hcapture = $hist;
+				$cdr_id = $topCDR;
 			} else {
-				
+				$hcapture = $hist_data[($i < 0 ? 0 : $i)]['AppStateCapture'];
+				$cdr_id = $hcapture['cdr_id'];
+			}
+			
+			$ncapture = $hist_data[$i+1]['AppStateCapture'];
+			
+			if($ncapture['created'] == true) {
+				$changed[] = 'Created';
+			} else {
 				foreach($hist as $key => $value) {
-					if($hcapture[$key] != null && $key != 'app_id') {
-						$changed[] = $key . ' = ' . $hcapture[$key];
+					if($ncapture[$key] != null && $key != 'app_id') {
+						$changed[] = $key . ' => ' . $hist[$key];
+						$hist[$key] = $ncapture[$key];
 					}
 				}
-				
-				$hist_changes[] = array($hcapture['cdr_id'], $changed);
 			}
+			$hist_changes[] = array($cdr_id, $changed);
 		}
 		
 		$this->set('data', $data);

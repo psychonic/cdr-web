@@ -21,6 +21,14 @@ class ContentRecord extends AppModel {
 					'order'					=> 'sub_id'
 			)
 		);
+		
+	function top($id) {
+		return $this->field('cdr_id', array('cdr_id >' => $id), 'cdr_id ASC');
+	}
+	
+	function bottom($id) {
+		return $this->field('cdr_id', array('cdr_id <' => $id), 'cdr_id DESC');
+	}
 }
 
 ?>

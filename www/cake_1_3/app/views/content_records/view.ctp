@@ -19,7 +19,8 @@
 			
 			foreach($apps as $app) {
 				$app_info =& $app['AppStateCapture'];
-				$buffer .= sprintf($linkTemplate, $app_info['app_id'], ($names != null ?  $app_info['app_id'] . ' ('  . $names[$app_info['app_id']] . ')' : $app_info['app_id']));
+				//$buffer .= sprintf($linkTemplate, $app_info['app_id'], ($names != null ?  $app_info['app_id'] . ' ('  . $names[$app_info['app_id']] . ')' : $app_info['app_id']));
+				$buffer .= sprintf($linkTemplate, $app_info['app_id'], ($names != null ?  $names[$app_info['app_id']] : $app_info['app_id']));
 				if($c-- > 1) $buffer .= ',&nbsp; &nbsp;';
 			}
 		}
@@ -36,7 +37,8 @@
 			
 			foreach($subs as $sub) {
 				$sub_info =& $sub['SubStateCapture'];
-				$buffer .= sprintf($linkTemplate, $sub_info['sub_id'], ($names != null ?  $sub_info['sub_id'] . ' ('  . $names[$sub_info['sub_id']] . ')' : $sub_info['sub_id']));
+				//$buffer .= sprintf($linkTemplate, $sub_info['sub_id'], ($names != null ?  $sub_info['sub_id'] . ' ('  . $names[$sub_info['sub_id']] . ')' : $sub_info['sub_id']));
+				$buffer .= sprintf($linkTemplate, $sub_info['sub_id'], ($names != null ? $names[$sub_info['sub_id']] : $sub_info['sub_id']));
 				if($c-- > 1) $buffer .= ',&nbsp; &nbsp;';
 			}
 		}
