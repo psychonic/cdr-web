@@ -13,7 +13,7 @@
 			
 			echo $html->tableCells(
 									array(
-										array($format->columnLiteral($format->applink($html, $reference_id, $changes[0], array('cdr_id'=>$changes[0]))),
+										array($format->columnLiteral($format->applink($reference_id, $changes[0], array('cdr_id'=>$changes[0]))),
 												implode(', ',$changes[1]))
 									),
 									null,

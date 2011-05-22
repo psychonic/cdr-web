@@ -15,7 +15,7 @@
 			echo $html->tableCells(
 									array(
 										array($sub_data['sub_id'],
-											$format->sublink($html, $sub_data['sub_id'], $sub_data['name'])
+											$format->sublink($sub_data['sub_id'], $sub_data['name'])
 										)
 									),
 									null,
