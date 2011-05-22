@@ -2,7 +2,7 @@
 	<?php 
 		echo $html->tableHeaders(
 									array('CDR ID', 
-											'Previous State'
+											'Changed State'
 										)
 							); 
 	?>

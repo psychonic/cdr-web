@@ -248,3 +248,7 @@
 2011-05-22 01:29:17 Debug: Notice (8): Undefined offset: 0 in [C:\Users\Azu\Documents\CDR\www\cake_1_3\app\views\subscriptions\hist.ctp, line 16]
 2011-05-22 01:29:17 Debug: Notice (8): Undefined offset: 0 in [C:\Users\Azu\Documents\CDR\www\cake_1_3\app\views\subscriptions\hist.ctp, line 16]
 2011-05-22 01:29:19 Debug: Notice (8): Undefined offset: 0 in [C:\Users\Azu\Documents\CDR\www\cake_1_3\app\views\subscriptions\hist.ctp, line 16]
+2011-05-22 03:37:52 Debug: Notice (8): Undefined property: ApplicationsController::$ContentRecord in [C:\Users\Azu\Documents\CDR\www\cake_1_3\app\controllers\applications_controller.php, line 126]
+2011-05-22 03:49:13 Debug: Notice (8): Undefined variable: capture in [C:\Users\Azu\Documents\CDR\www\cake_1_3\app\controllers\applications_controller.php, line 132]
+2011-05-22 03:52:52 Debug: Notice (8): Undefined offset: -1 in [C:\Users\Azu\Documents\CDR\www\cake_1_3\app\controllers\applications_controller.php, line 132]
+2011-05-22 04:02:28 Debug: Notice (8): Undefined index: AppStateCapture in [C:\Users\Azu\Documents\CDR\www\cake_1_3\app\controllers\subscriptions_controller.php, line 103]

@@ -27,12 +27,10 @@ class ContentRecordsController extends AppController
 		
 		$data = $this->ContentRecord->read();
 
-		$nextCDR = $this->ContentRecord->find('first', array('fields' => array('cdr_id'), 'conditions' => array('cdr_id <' => $id), 'order' => array('cdr_id DESC')));
+		$nextCDR = $this->ContentRecord->bottom($id);
 		
-		if($nextCDR == null)
+		if($nextCDR == false)
 			$nextCDR = '0';
-		else
-			$nextCDR = $nextCDR['ContentRecord']['cdr_id'];
 		
 		$appstate_created = $this->ContentRecord->AppStateCapture->find('all', array('conditions' => array('cdr_id' => $nextCDR, 'created' => 1), 'fields' => array('app_id', 'created', 'name'), 'order' => array('app_id ASC')));
 		$appstate_modified = $this->ContentRecord->AppStateCapture->find('all', array('conditions' => array('cdr_id' => $nextCDR, 'created' => 0), 'fields' => array('app_id', 'created', 'name'), 'order' => array('app_id ASC')));
