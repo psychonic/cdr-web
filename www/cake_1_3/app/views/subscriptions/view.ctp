@@ -9,9 +9,9 @@
 		
 		foreach($data['ExtendedInfo'] as $key => $value) {
 			if(in_array($key, $userSubLinks)) {
-				$value = $format->sublink($html, $value);
+				$value = $format->sublink($value);
 			} else if(in_array($key, $userAppLinks)) {
-				$value = $format->applink($html, $value);
+				$value = $format->applink($value);
 			}
 			
 			if(substr($value,0,7) == 'http://') {
@@ -28,7 +28,7 @@
 								array( $format->column('Billing Type'), $sub_info['billing_type'] ),
 								array( $format->column('Cost (in cents)'), $sub_info['cost_in_cents'] ),
 								array( $format->column('Period (in minutes)'), $sub_info['period_in_minutes'] ),
-								array( $format->column('On Subscribe Run App ID'), $format->applink($html, $sub_info['on_subscribe_run_app_id']) ),
+								array( $format->column('On Subscribe Run App ID'), $format->applink($sub_info['on_subscribe_run_app_id']) ),
 								array( $format->column('On Subscribe Launch Option'), $sub_info['on_subscribe_run_launch_option_index'] ),
 								array( $format->column('Is Preorder'), $format->boolstring($sub_info['is_preorder']) ),
 								array( $format->column('Requires Shipping Address'), $format->boolstring($sub_info['requires_shipping_address']) ),

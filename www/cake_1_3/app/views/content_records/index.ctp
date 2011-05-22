@@ -17,7 +17,7 @@
 			
 			echo $html->tableCells(
 									array(
-										array($format->cdrlink($html, $cdr_data['cdr_id']),
+										array($format->cdrlink($cdr_data['cdr_id']),
 													$cdr_data['date_updated'],
 													$cdr_data['date_processed'],
 													$cdr_data['app_count'],

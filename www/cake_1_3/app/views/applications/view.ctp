@@ -27,7 +27,7 @@
 		
 		if($show_version) {
 		
-			$versionLink = $format->applink($html, $app_info['app_id'], 'hide', array('cdr_id' => $reference_cdr));
+			$versionLink = $format->applink($app_info['app_id'], 'hide', array('cdr_id' => $reference_cdr));
 			
 			foreach($data['AppVersion'] as $version) {
 				$versionBuffer .= '<table class="subcontent">';
@@ -49,7 +49,7 @@
 			}
 		
 		} else {
-			$versionLink = $format->applink($html, $app_info['app_id'], 'show', array('show_version' => 1, 'cdr_id' => $reference_cdr));
+			$versionLink = $format->applink($app_info['app_id'], 'show', array('show_version' => 1, 'cdr_id' => $reference_cdr));
 			$versionBuffer = 'Hidden';
 		}
 		
@@ -58,7 +58,7 @@
 			$fsBuffer .= '<table class="subcontent">';
 			$fsBuffer .= $html->tableCells(
 										array(
-											array($format->column('App ID'), $format->applink($html, $fs['app_id_filesystem'])),
+											array($format->column('App ID'), $format->applink($fs['app_id_filesystem'])),
 											array($format->column('Mount Name'), $fs['mount_name']),
 											array($format->column('Is Optional'), $format->boolstring($fs['is_optional']))
 										),
@@ -76,7 +76,7 @@
 		} else {
 			foreach($data['UserDefined'] as $key => $value) {
 				if(in_array($key, $userAppLinks)) {
-					$value = $format->applink($html, $value);
+					$value = $format->applink($value);
 				}
 			
 				if(substr($value,0,7) == 'http://') {
@@ -88,7 +88,7 @@
 		}
 		
 		// 0 is the default, even though it could be technically correct
-		$manifestOnly = $app_info['app_of_manifest_only'] > 0 ? $format->applink($html, $app_info['app_of_manifest_only']) :  $app_info['app_of_manifest_only'];
+		$manifestOnly = $app_info['app_of_manifest_only'] > 0 ? $format->applink($app_info['app_of_manifest_only']) :  $app_info['app_of_manifest_only'];
 		
 		echo $html->tableCells(
 							array(

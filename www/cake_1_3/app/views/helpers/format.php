@@ -5,42 +5,36 @@
 
 class FormatHelper extends AppHelper {
 
+	var $helpers = array('Html');
+	
 	function __construct() {
 		parent::__construct();
 	}
 
-	function applink($html, $appid, $text = null, $user = null) {
-		if ($appid < 0) {
-			return ($text == null ? $appid : $text);
+	function link($id, $controller, $text = null, $user = null) {
+		if($id < 0) {
+			return ($text == null ? $id : $text);
 		}
 		
-		$target = array('controller' => 'applications', 'action' => 'view', 'id' => $appid);
+		$target = array('controller' => $controller, 'action' => 'view', 'id' => $id);
 		
 		if($user != null) {
 			$target = array_merge($target, $user);
 		}
 		
-		return $html->link($text == null ? $appid : $text, $target);
+		return $this->Html->link($text == null ? $id : $text, $target);
 	}
 	
-	function sublink($html, $subid, $text = null, $user = null) {
-		$target = array('controller' => 'subscriptions', 'action' => 'view', 'id' => $subid);
-		
-		if($user != null) {
-			$target = array_merge($target, $user);
-		}
-		
-		return $html->link($text == null ? $subid : $text, $target);
+	function applink($appid, $text = null, $user = null) {
+		return $this->link($appid, 'applications', $text, $user);
 	}
 	
-	function cdrlink($html, $subid, $text = null, $user = null) {
-		$target = array('controller' => 'contentrecords', 'action' => 'view', 'id' => $subid);
-		
-		if($user != null) {
-			$target = array_merge($target, $user);
-		}
-		
-		return $html->link($text == null ? $subid : $text, $target);
+	function sublink($subid, $text = null, $user = null) {
+		return $this->link($subid, 'subscriptions', $text, $user);
+	}
+	
+	function cdrlink($cdrid, $text = null, $user = null) {
+		return $this->link($cdrid, 'contentrecords', $text, $user);
 	}
 	
 	function column($key, $class='column') {

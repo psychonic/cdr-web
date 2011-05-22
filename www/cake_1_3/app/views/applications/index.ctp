@@ -16,7 +16,7 @@
 			echo $html->tableCells(
 									array(
 										array($app_data['app_id'],
-												$format->applink($html, $app_data['app_id'], $app_data['name']), //$html->link($app_data['name'], array('controller' => 'applications', 'action' => 'view', 'id' => $app_data['app_id'])),
+												$format->applink($app_data['app_id'], $app_data['name']),
 												$app_data['current_version_id']
 											)
 									),

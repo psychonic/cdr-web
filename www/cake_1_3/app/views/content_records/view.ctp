@@ -15,7 +15,7 @@
 				return;
 			}
 			
-			$linkTemplate = str_replace('0', '%s', $format->applink($html, '0'));
+			$linkTemplate = str_replace('0', '%s', $format->applink('0'));
 			
 			foreach($apps as $app) {
 				$app_info =& $app['AppStateCapture'];
@@ -33,7 +33,7 @@
 				return;
 			}
 			
-			$linkTemplate = str_replace('0', '%s', $format->sublink($html, '0'));
+			$linkTemplate = str_replace('0', '%s', $format->sublink('0'));
 			
 			foreach($subs as $sub) {
 				$sub_info =& $sub['SubStateCapture'];
