@@ -14,29 +14,28 @@ class SubscriptionsController extends AppController
 		);
 	
 	function index() {
-		$this->Subscription->unbindModel(array('hasAndBelongsToMany' => array('Application')), false); // don't grab expensive assocation
-		$this->Subscription->unbindModel(array('hasMany' => array('SubStateCapture')), false);
-		
 		$this->set('data', $this->paginate('Subscription'));
 	}
 	
 	
 	function view($id = null) {
-		$this->Subscription->unbindModel(array('hasAndBelongsToMany' => array('Application'))); // don't grab expensive assocation
-		$this->Subscription->unbindModel(array('hasMany' => array('SubStateCapture')));
-		
-		$this->Subscription->sub_id = $id;
-		$data = $this->Subscription->read();
-		
-		
-		// build data to fit old CDR if set
-		// this is done in reverse to get the oldest value for the cdr we want, compared to the history page which is a descending list of all captures
 		$cdr_want = null;
-		
+			
 		if(isset($this->passedArgs['cdr_id'])) {
 			$cdr_want = $this->passedArgs['cdr_id'];
 			
-			$history = $this->Subscription->SubStateCapture->find('all', array('conditions' => array('sub_id' => $id, 'cdr_id >=' => $cdr_want), 'order' => 'cdr_id ASC'));
+			$this->Subscription->cdr_target = $cdr_want;
+			$this->Subscription->bindCapture();
+		}
+
+		$this->Subscription->sub_id = $id;
+		$data = $this->Subscription->read();
+
+		// build data to fit old CDR if set
+		// this is done in reverse to get the oldest value for the cdr we want, compared to the history page which is a descending list of all captures
+		
+		if(isset($cdr_want)) {
+			$history = $this->Subscription->findCapture();
 
 			foreach($data['Subscription'] as $key => $value)
 			{
@@ -51,6 +50,7 @@ class SubscriptionsController extends AppController
 			}
 		}
 		
+		// behavior
 		$data['ExtendedInfo'] = json_decode($data['Subscription']['extended_info']);
 		
 		$this->set('data', $data);
@@ -63,12 +63,7 @@ class SubscriptionsController extends AppController
 
 
 	function apps($id = null) {
-		$this->Subscription->unbindModel(array('hasAndBelongsToMany' => array('Application'))); 
-		$this->Subscription->unbindModel(array('hasMany' => array('SubStateCapture')));
-		
-		$this->Subscription->Application->unbindModel(array('hasAndBelongsToMany' => array('Subscription')), false);
-		$this->Subscription->Application->unbindModel(array('hasMany' => array('AppFilesystem', 'AppVersion','AppStateCapture')), false);
-		$this->Subscription->Application->bindModel(array('hasOne'=>array('AppsSubs')), false);
+		$this->Subscription->bindMany();
 		
 		$this->Subscription->sub_id = $id;
 		$data = $this->Subscription->read();
@@ -86,8 +81,7 @@ class SubscriptionsController extends AppController
 
 
 	function hist($id = null) {
-		$this->Subscription->unbindModel(array('hasAndBelongsToMany' => array('Application'))); 
-		$this->Subscription->unbindModel(array('hasMany' => array('SubStateCapture')));
+		$this->Subscription->bindCapture();
 		
 		$this->Subscription->sub_id = $id;
 		$data = $this->Subscription->read();
