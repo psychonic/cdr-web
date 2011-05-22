@@ -71,19 +71,20 @@
 		// optimize this?
 		$userAppLinks = array('primarycache', 'primarycache_mac', 'primarycache_macos', 'dependantOnApp', 'vacmodulecache', 'vacmacmodulecache', 'DemoOfAppID', 'DLCForAppID', 'MustOwnAppToPurchase');
 		
-		if($data['UserDefined'] == null && !empty($app_info['user_defined'])) {
+		if($data['UserDefined'] === null && !empty($app_info['user_defined'])) {
 			$userBuffer = $app_info['user_defined'];
-		}
-		foreach($data['UserDefined'] as $key => $value) {
-			if(in_array($key, $userAppLinks)) {
-				$value = $format->applink($html, $value);
-			}
+		} else {
+			foreach($data['UserDefined'] as $key => $value) {
+				if(in_array($key, $userAppLinks)) {
+					$value = $format->applink($html, $value);
+				}
 			
-			if(substr($value,0,7) == 'http://') {
-				$value = '<a href="' . $value . '">' . $value . '</a>';
-			}
+				if(substr($value,0,7) == 'http://') {
+					$value = '<a href="' . $value . '">' . $value . '</a>';
+				}
 			
-			$userBuffer .= $key . ' = ' . $value . '<br />';
+				$userBuffer .= $key . ' = ' . $value . '<br />';
+			}
 		}
 		
 		// 0 is the default, even though it could be technically correct
