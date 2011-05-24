@@ -11,6 +11,17 @@ class Application extends AppModel {
 
 	var $cdr_target;
 
+	function expand(&$data) {
+		$data['LaunchOptions'] = json_decode($data[$this->name]['launch_options'], true);
+		$data['UserDefined'] = json_decode($data[$this->name]['user_defined'], true);
+	
+		if(isset($data['AppVersion'])) {
+			foreach($data['AppVersion'] as $key => $version) {
+				$data['AppVersion'][$key]['launch_option_ids'] = implode(', ', json_decode($version['launch_option_ids']));
+			}
+		}
+	}
+	
 	function findCapture() {
 			return $this->AppStateCapture->find('all', array('conditions' => array('app_id' => $this->app_id, 'cdr_id >=' => $this->cdr_target), 'order' => 'cdr_id ASC'));
 	}
@@ -56,6 +67,8 @@ class Application extends AppModel {
 	
 	function bindMany() {
 		$this->linkModel(array('AppsSubs', 'Subscription'));
+		
+		$this->Subscription->virtualFields['cdr_id'] = 'AppsSubs.cdr_id';
 		
 		$this->Subscription->bindModel(array('hasOne'=>array('AppsSubs')), false);
 	}

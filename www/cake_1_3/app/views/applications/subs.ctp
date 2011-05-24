@@ -6,7 +6,8 @@
 	<?php 
 		echo $html->tableHeaders(
 									array($this->Paginator->sort('Sub ID', 'sub_id'), 
-											$this->Paginator->sort('Name', 'name')
+											$this->Paginator->sort('Name', 'name'),
+											$this->Paginator->sort('Origin CDR', 'cdr_id', array('direction' => 'desc'))
 										)
 							); 
 	?>
@@ -19,7 +20,7 @@
 			
 			echo $html->tableCells(
 									array(
-										array($format->columnLiteral($sub['sub_id']), $format->sublink($sub['sub_id'], $sub['name']))
+										array($format->columnLiteral($sub['sub_id']), $format->sublink($sub['sub_id'], $sub['name']),  $format->columnLiteral($sub['cdr_id'], 'columnlite'))
 									),
 									null,
 									array('class' => 'alt')

@@ -22,6 +22,8 @@ class Subscription extends AppModel {
 	function bindMany() {
 		$this->linkModel(array('AppsSubs', 'Application'));
 		
+		$this->Application->virtualFields['cdr_id'] = 'AppsSubs.cdr_id';
+		
 		$this->Application->bindModel(array('hasOne'=>array('AppsSubs')), false);
 	}
 	

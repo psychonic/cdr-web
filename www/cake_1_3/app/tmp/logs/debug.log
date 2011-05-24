@@ -293,3 +293,5 @@
 2011-05-22 10:03:14 Debug: Notice (8): Undefined variable: model in [C:\Users\Azu\Documents\CDR\www\cake_1_3\app\models\behaviors\lazyload.php, line 7]
 2011-05-22 10:03:14 Debug: Notice (8): Undefined variable: model in [C:\Users\Azu\Documents\CDR\www\cake_1_3\app\models\behaviors\lazyload.php, line 10]
 2011-05-22 10:13:11 Debug: Notice (8): Undefined offset: 0 in [C:\Users\Azu\Documents\CDR\www\cake_1_3\app\controllers\subscriptions_controller.php, line 98]
+2011-05-24 22:12:03 Debug: Notice (8): Undefined variable: sub in [C:\Users\Azu\Documents\CDR\www\cake_1_3\app\views\subscriptions\apps.ctp, line 23]
+2011-05-24 22:12:03 Debug: Notice (8): Undefined variable: sub in [C:\Users\Azu\Documents\CDR\www\cake_1_3\app\views\subscriptions\apps.ctp, line 23]
