@@ -6,7 +6,8 @@
 	<?php 
 		echo $html->tableHeaders(
 									array($this->Paginator->sort('App ID', 'app_id'), 
-											$this->Paginator->sort('Name', 'name')
+											$this->Paginator->sort('Name', 'name'),
+											$this->Paginator->sort('Origin CDR', 'cdr_id', array('direction' => 'desc'))
 										)
 							); 
 	?>
@@ -19,7 +20,7 @@
 			
 			echo $html->tableCells(
 									array(
-										array($format->columnLiteral($app['app_id']), $format->applink($app['app_id'], $app['name']))
+										array($format->columnLiteral($app['app_id']), $format->applink($app['app_id'], $app['name']),  $format->columnLiteral($app['cdr_id'], 'columnlite'))
 									),
 									null,
 									array('class' => 'alt')

@@ -4,6 +4,9 @@ class ApplicationsController extends AppController
 {
 	var $name = 'Applications';
 	
+	var $modelView = 'Application';
+	var $modelCapture = 'AppStateCapture';
+	
 	var $helpers = array('paginator', 'format');
 	
 	var $paginate = array(
@@ -14,7 +17,7 @@ class ApplicationsController extends AppController
 		);
 	
 	function index() {
-		$this->set('data', $this->paginate('Application'));
+		$this->set('data', $this->paginate($this->modelView));
 	}
 	
 	
@@ -54,15 +57,7 @@ class ApplicationsController extends AppController
 			}
 		}
 		
-		// make this a behavior
-		$data['LaunchOptions'] = json_decode($data['Application']['launch_options'], true);
-		$data['UserDefined'] = json_decode($data['Application']['user_defined'], true);
-	
-		if(isset($data['AppVersion'])) {
-			foreach($data['AppVersion'] as $key => $version) {
-				$data['AppVersion'][$key]['launch_option_ids'] = implode(', ', json_decode($version['launch_option_ids']));
-			}
-		}
+		$this->Application->expand($data);
 		
 		$this->set('data', $data);
 		$this->set('show_version', $wantVersions);
