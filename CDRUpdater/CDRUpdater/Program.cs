@@ -248,7 +248,9 @@ namespace CDRUpdater
                         // capture created status
                         sw_sub_capture.WriteLine("{0}\t1\t{1}", prev_cdr_id, sub.SubID.ToString());
                     }
-
+                    
+                    // get subs, mark, delete if not there
+                    // add on app_list_ops for deletes and adds
                     foreach (int appid in sub.AppIDs)
                     {
                         sw_apps_subs.WriteLine(String.Format("{0}\t{1}\t{2}", appid, sub.SubID, cdr_id));

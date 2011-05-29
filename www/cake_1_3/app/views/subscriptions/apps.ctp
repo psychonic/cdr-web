@@ -20,7 +20,7 @@
 			
 			echo $html->tableCells(
 									array(
-										array($format->columnLiteral($app['app_id']), $format->applink($app['app_id'], $app['name']),  $format->columnLiteral($app['cdr_id'], 'columnlite'))
+										array($format->columnLiteral($app['app_id']), $format->applink($app['app_id'], $app['name']),  $format->columnLiteral($format->cdrlink($app['cdr_id']), 'columnlite'))
 									),
 									null,
 									array('class' => 'alt')

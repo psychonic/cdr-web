@@ -14,7 +14,7 @@
 			echo $html->tableCells(
 									array(
 										array($format->columnLiteral($format->applink($reference_id, $changes[0], array('cdr_id'=>$changes[0]))),
-												implode(', ',$changes[1]))
+												implode(', ',$format->prettychange($changes[1])))
 									),
 									null,
 									array('class' => 'alt')

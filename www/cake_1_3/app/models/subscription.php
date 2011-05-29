@@ -11,6 +11,10 @@ class Subscription extends AppModel {
 	
 	var $cdr_target;
 
+	function expand(&$data) {
+		$data['ExtendedInfo'] = json_decode($data[$this->name]['extended_info']);
+	}
+	
 	function findCapture() {
 			return $this->SubStateCapture->find('all', array('conditions' => array('sub_id' => $this->sub_id, 'cdr_id >=' => $this->cdr_target), 'order' => 'cdr_id ASC'));
 	}
