@@ -50,6 +50,10 @@ class FormatHelper extends AppHelper {
 	}
 	
 	function boolstring($value) {
-			return $value ? 'true' : 'false';
+		return $value ? 'true' : 'false';
+	}
+	
+	function prettychange($text) {
+		return str_replace(array(',', ':'), array( ', ', ': '), $text);
 	}
 }
