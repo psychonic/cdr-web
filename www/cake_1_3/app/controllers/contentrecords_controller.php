@@ -81,14 +81,7 @@ class ContentRecordsController extends AppController
 			}
 		}
 		
-		$this->set('data', $data);
-		$this->set('appstate_created', $appstate_created);
-		$this->set('appstate_modified', $appstate_modified);
-		$this->set('substate_created', $substate_created);
-		$this->set('substate_modified', $substate_modified);
-		
-		$this->set('appnames', $appnames);
-		$this->set('subnames', $subnames);
+		$this->set(compact('data', 'appstate_created', 'appstate_modified', 'substate_created', 'substate_modified', 'appnames', 'subnames'));
 		
 		$this->set('title_for_layout', 'CDR - ' . $data['ContentRecord']['cdr_id']);
 	}
