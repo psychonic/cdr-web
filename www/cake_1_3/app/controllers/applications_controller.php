@@ -95,6 +95,24 @@ class ApplicationsController extends AppController
 		$this->set('layout_menuitems', array('view', 'subs', 'history' => 'hist'));
 		$this->set('reference_id', $id);
 	}
+	
+	function search() {
+			if(is_array($this->data)) {
+				$definition = $this->Application->getSearchableDefinition();
+				
+				foreach($definition as $key => $type) {
+					if(isset($this->data[$this->modelView][$key]) && !empty($this->data[$this->modelView][$key])) {
+						$url['action'] = 'index';
+						$url['Search.' . $key] = $this->data[$this->modelView][$key];
+						
+						$this->redirect($url, null, true);
+					}
+				}
+				var_dump($this->data);		
+			}
+			
+			$this->set('title_for_layout', 'Application Search');
+	}
 }
 
 ?>
