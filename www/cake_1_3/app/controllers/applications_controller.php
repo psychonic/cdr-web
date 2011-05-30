@@ -9,7 +9,7 @@ class ApplicationsController extends AppController
 	var $modelPK = 'app_id';
 	
 	var $helpers = array('paginator', 'format');
-	var $components = array('History');
+	var $components = array('History', 'Search');
 	
 	var $paginate = array(
 			'limit' => 100,
@@ -19,6 +19,8 @@ class ApplicationsController extends AppController
 		);
 	
 	function index() {
+		$this->Search->buildConditions($this->passedArgs);
+		
 		$this->set('data', $this->paginate($this->modelView));
 	}
 	
@@ -98,17 +100,7 @@ class ApplicationsController extends AppController
 	
 	function search() {
 			if(is_array($this->data)) {
-				$definition = $this->Application->getSearchableDefinition();
-				
-				foreach($definition as $key => $type) {
-					if(isset($this->data[$this->modelView][$key]) && !empty($this->data[$this->modelView][$key])) {
-						$url['action'] = 'index';
-						$url['Search.' . $key] = $this->data[$this->modelView][$key];
-						
-						$this->redirect($url, null, true);
-					}
-				}
-				var_dump($this->data);		
+				$this->Search->processRedirect($this->data);
 			}
 			
 			$this->set('title_for_layout', 'Application Search');
