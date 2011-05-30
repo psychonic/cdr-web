@@ -90,6 +90,10 @@ class SubscriptionsController extends AppController
 		$this->set('layout_menuitems', array('view', 'apps', 'history' => 'hist'));
 		$this->set('reference_id', $id);
 	}
+	
+	function search() {
+			$this->set('title_for_layout', 'Application Search');
+	}
 }
 
 ?>

@@ -48,8 +48,8 @@
 				<div class="stack">
 					<h3>search</h3>
 					<ul>
-						<li><?php echo $this->Html->link(__('apps', true), '/'); ?></li>
-						<li><?php echo $this->Html->link(__('subs', true), '/'); ?></li>
+						<li><?php echo $this->Html->link(__('apps', true), array('controller' => 'applications', 'action' => 'search')); ?></li>
+						<li><?php echo $this->Html->link(__('subs', true), array('controller' => 'subscriptions', 'action' => 'search')); ?></li>
 					</ul>
 				</div>
 			</div>

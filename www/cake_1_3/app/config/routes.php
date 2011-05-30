@@ -28,17 +28,23 @@
  */
 	Router::defaults(false);
 	
- 	Router::connectNamed(array('cdr_id', 'show_version'), array('default' => true));
+ 	Router::connectNamed(array('cdr_id', 'show_version', 'Search.app_id', 'Search.name', 'Search.sub_id'), array('default' => true));
 	
 	Router::connect('/', array('controller' => 'pages', 'action' => 'display', 'home'));
 	Router::connect('/about', array('controller' => 'pages', 'action' => 'display', 'about'));
 
 	function routeStyles($controller, $shorthand) {
-		Router::connect("/${shorthand}", array('controller' => $controller, 'action' => 'index'));
-		Router::connect("/${shorthand}/page/:page/*", array('controller' => $controller, 'action' => 'index'));
-	
 		Router::connect("/${shorthand}/:id/*", array('controller' => $controller, 'action' => 'view'), array('id' => '[\d]+', 'pass' => array('id')));
 		Router::connect("/${shorthand}/:action/:id/*", array('controller' => $controller), array('id' => '[\d]+', 'pass' => array('id')));
+		
+		Router::connect("/${shorthand}", array('controller' => $controller, 'action' => 'index'));
+		Router::connect("/${shorthand}/:action", array('controller' => $controller));
+		
+		Router::connect("/${shorthand}/search/p/:page/*", array('controller' => $controller, 'action' => 'index'));
+		Router::connect("/${shorthand}/search/*", array('controller' => $controller, 'action' => 'index'));
+
+		Router::connect("/${shorthand}/:action/*", array('controller' => $controller));
+		
 	}
 	
 	routeStyles('applications', 'app');
