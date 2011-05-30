@@ -26,6 +26,8 @@
  * its action called 'display', and we pass a param to select the view file
  * to use (in this case, /app/views/pages/home.ctp)...
  */
+	Router::defaults(false);
+	
  	Router::connectNamed(array('cdr_id', 'show_version'), array('default' => true));
 	
 	Router::connect('/', array('controller' => 'pages', 'action' => 'display', 'home'));
@@ -39,11 +41,12 @@
 		Router::connect("/${shorthand}/:action/:id/*", array('controller' => $controller), array('id' => '[\d]+', 'pass' => array('id')));
 	}
 	
-	routeStyles('applications', 'apps');
-	routeStyles('subscriptions', 'subs');
+	routeStyles('applications', 'app');
+	routeStyles('subscriptions', 'sub');
 	routeStyles('contentrecords', 'cdr');
 
 /**
  * ...and connect the rest of 'Pages' controller's urls.
  */
 	Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'));
+	
