@@ -14,8 +14,6 @@ class ContentRecordsController extends AppController
 		);
 	
 	function index() {
-		$this->ContentRecord->unbindModel(array('hasMany' => array('AppStateCapture', 'SubStateCapture')), false);
-		
 		$data = $this->paginate('ContentRecord');
 		
 		$this->set('data', $data);
@@ -23,7 +21,7 @@ class ContentRecordsController extends AppController
 	
 	
 	function view($id = null) {
-		$this->ContentRecord->unbindModel(array('hasMany' => array('AppStateCapture', 'SubStateCapture')), false);
+		$this->ContentRecord->bindCapture();
 		
 		$data = $this->ContentRecord->read();
 
@@ -50,9 +48,6 @@ class ContentRecordsController extends AppController
 			
 			$this->loadModel('Application');
 			
-			$this->Application->unbindModel(array('hasAndBelongsToMany' => array('Subscription')), false); 
-			$this->Application->unbindModel(array('hasMany' => array('AppFilesystem', 'AppVersion','AppStateCapture')), false);
-		
 			$appdata = $this->Application->find('all', array('fields' => array('app_id','name'), 'conditions' => array('app_id' => $ids)));
 			
 			foreach($appdata as $app) {
@@ -78,9 +73,6 @@ class ContentRecordsController extends AppController
 			}
 			
 			$this->loadModel('Subscription');
-			
-			$this->Subscription->unbindModel(array('hasAndBelongsToMany' => array('Application')), false); 
-			$this->Subscription->unbindModel(array('hasMany' => array('SubStateCapture')), false);
 			
 			$subdata = $this->Subscription->find('all', array('fields' => array('sub_id','name'), 'conditions' => array('sub_id' => $ids)));
 			

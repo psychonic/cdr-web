@@ -9,7 +9,7 @@ class SubscriptionsController extends AppController
 	var $modelPK = 'sub_id';
 		
 	var $helpers = array('paginator', 'format');
-	var $components = array('History');
+	var $components = array('History', 'Search');
 	
 	var $paginate = array(
 			'limit' => 100,
@@ -19,6 +19,8 @@ class SubscriptionsController extends AppController
 		);
 	
 	function index() {
+		$this->Search->buildConditions($this->passedArgs);
+		
 		$this->set('data', $this->paginate($this->modelView));
 	}
 	
@@ -92,7 +94,11 @@ class SubscriptionsController extends AppController
 	}
 	
 	function search() {
-			$this->set('title_for_layout', 'Application Search');
+			if(is_array($this->data)) {
+				$this->Search->processRedirect($this->data);
+			}
+			
+			$this->set('title_for_layout', 'Subscription Search');
 	}
 }
 

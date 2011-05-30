@@ -1,0 +1,3 @@
+- apps_subs should be tracked like app_version with a cdr_id_last
+- cleanup all the $this->set in controllers
+- pretty format for cdr view
