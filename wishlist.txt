@@ -2,3 +2,4 @@
 - cleanup all the $this->set in controllers
 - pretty format for cdr view
 - save view state for app/sub history when paginating
+- search on fields not in index need to be appended to table
