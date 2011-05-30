@@ -3,3 +3,4 @@
 - pretty format for cdr view
 - save view state for app/sub history when paginating
 - search on fields not in index need to be appended to table
+- searching on key value fields, both key value pair and all values

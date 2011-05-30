@@ -1,5 +1,7 @@
 <table>
 	<?php 
+		$this->Paginator->options(array('url' => $this->passedArgs));
+	
 		echo $html->tableHeaders(
 									array($this->Paginator->sort('App ID', 'app_id'), 
 											$this->Paginator->sort('Name', 'name'),
