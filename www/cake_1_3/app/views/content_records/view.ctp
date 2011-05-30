@@ -17,12 +17,26 @@
 			
 			$linkTemplate = str_replace('0', '%s', $format->applink('0'));
 			
+			if(isset($names)) $buffer .= '<table class="subcontent">';
+			
 			foreach($apps as $app) {
 				$app_info =& $app['AppStateCapture'];
-				//$buffer .= sprintf($linkTemplate, $app_info['app_id'], ($names != null ?  $app_info['app_id'] . ' ('  . $names[$app_info['app_id']] . ')' : $app_info['app_id']));
-				$buffer .= sprintf($linkTemplate, $app_info['app_id'], ($names != null ?  $names[$app_info['app_id']] : $app_info['app_id']));
-				if($c-- > 1) $buffer .= ',&nbsp; &nbsp;';
+
+				if(isset($names)) {
+						$buffer .= $html->tableCells(
+								array(
+									array(sprintf($linkTemplate, $app_info['app_id'], $app_info['app_id']), sprintf($linkTemplate, $app_info['app_id'], $names[$app_info['app_id']]))
+								),
+								array('class' => 'even'),
+								array('class' => 'odd')
+							);
+				} else {
+					$buffer .= sprintf($linkTemplate, $app_info['app_id'], $app_info['app_id']);
+					if($c-- > 1) $buffer .= ',&nbsp; &nbsp;';
+				}
 			}
+			
+			if(isset($names)) $buffer .= '</table>';
 		}
 		
 		function bufferSubs(&$format, &$html, &$subs, &$names, &$buffer) {
@@ -35,12 +49,26 @@
 			
 			$linkTemplate = str_replace('0', '%s', $format->sublink('0'));
 			
+			if(isset($names)) $buffer .= '<table class="subcontent">';
+			
 			foreach($subs as $sub) {
 				$sub_info =& $sub['SubStateCapture'];
-				//$buffer .= sprintf($linkTemplate, $sub_info['sub_id'], ($names != null ?  $sub_info['sub_id'] . ' ('  . $names[$sub_info['sub_id']] . ')' : $sub_info['sub_id']));
-				$buffer .= sprintf($linkTemplate, $sub_info['sub_id'], ($names != null ? $names[$sub_info['sub_id']] : $sub_info['sub_id']));
-				if($c-- > 1) $buffer .= ',&nbsp; &nbsp;';
+				
+				if(isset($names)) {
+						$buffer .= $html->tableCells(
+								array(
+									array(sprintf($linkTemplate, $sub_info['sub_id'], $sub_info['sub_id']), sprintf($linkTemplate, $sub_info['sub_id'], $names[$sub_info['sub_id']]))
+								),
+								array('class' => 'even'),
+								array('class' => 'odd')
+							);
+				} else {
+					$buffer .= sprintf($linkTemplate, $sub_info['sub_id'], $sub_info['sub_id']);
+					if($c-- > 1) $buffer .= ',&nbsp; &nbsp;';
+				}
 			}
+
+			if(isset($names)) $buffer .= '</table>';
 		}
 		
 		bufferApps($format, $html, $appstate_created, $appnames, $appAddBuffer);
