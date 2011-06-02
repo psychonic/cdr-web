@@ -1,6 +1,12 @@
+- last update on apps and subs (should be easy as updating date_updated on app and sub as touched)
+
 - apps_subs should be tracked like app_version with a cdr_id_last
-- cleanup all the $this->set in controllers
-- pretty format for cdr view
-- save view state for app/sub history when paginating
+
 - search on fields not in index need to be appended to table
 - searching on key value fields, both key value pair and all values
+
+- cleanup all the $this->set in controllers
+
+- pretty format for cdr view
+
+- save view state for app/sub history when paginating
