@@ -119,7 +119,7 @@ namespace CDRUpdater
                 CloseoutRow(otype, prev_data, prev_cdr_id, writer);
             }
 
-            writer.WriteLine("{0}\t{1}\t\\N\t{2}", appID, cdr_id, String.Join("\t", sqlDict));
+            writer.Write("{0}\t{1}\t\\N\t{2}\r\n", appID, cdr_id, String.Join("\t", sqlDict));
         }
 
         public static void CloseoutRow(Type otype, DataRow row, int cdr_id_last, StreamWriter writer)
@@ -139,7 +139,7 @@ namespace CDRUpdater
                 sqlDict.Add(EscapeValue(type_value, enclose));
             }
 
-            writer.WriteLine("{0}\t{1}\t{2}\t{3}", row["app_id"], row["cdr_id"], cdr_id_last, String.Join("\t", sqlDict));
+            writer.WriteLine("{0}\t{1}\t{2}\t{3}\r\n", row["app_id"], row["cdr_id"], cdr_id_last, String.Join("\t", sqlDict));
         }
 
         private static string GetStringValue(Type propType, object value, bool follow_types, out bool enclose)

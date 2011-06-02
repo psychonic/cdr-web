@@ -29,7 +29,8 @@ namespace CDRUpdater
                 byte[] hash = null;
                 try
                 {
-                    hash = File.ReadAllBytes(HASHFILE);
+                    if(File.Exists(HASHFILE)) 
+                        hash = File.ReadAllBytes(HASHFILE);
                 }
                 catch (Exception ex2)
                 {
@@ -142,16 +143,16 @@ namespace CDRUpdater
 
                     SQLQuery.BuildDataInsertFromTypeWithChanges(app, app_info, cdr_id, prev_cdr_id, out app_current_data, out app_state_data);
 
-                    sw_app.WriteLine(app_current_data);
+                    sw_app.Write(app_current_data + "\r\n");
 
                     if (app_state_data != null)
                     {
-                        sw_app_capture.WriteLine(app_state_data);
+                        sw_app_capture.Write(app_state_data + "\r\n");
                     }
                     else if (app_info == null)
                     {
                         // capture created status
-                        sw_app_capture.WriteLine("{0}\t1\t{1}", prev_cdr_id, app.AppID.ToString());
+                        sw_app_capture.Write("{0}\t1\t{1}\r\n", prev_cdr_id, app.AppID.ToString());
                     }
 
 
@@ -237,23 +238,23 @@ namespace CDRUpdater
 
                     SQLQuery.BuildDataInsertFromTypeWithChanges(sub, sub_info, cdr_id, prev_cdr_id, out sub_current_data, out sub_state_data);
 
-                    sw_sub.WriteLine(sub_current_data);
+                    sw_sub.Write(sub_current_data + "\r\n");
 
                     if (sub_state_data != null)
                     {
-                        sw_sub_capture.WriteLine(sub_state_data);
+                        sw_sub_capture.Write(sub_state_data + "\r\n");
                     }
                     else if (sub_info == null)
                     {
                         // capture created status
-                        sw_sub_capture.WriteLine("{0}\t1\t{1}", prev_cdr_id, sub.SubID.ToString());
+                        sw_sub_capture.Write("{0}\t1\t{1}\r\n", prev_cdr_id, sub.SubID.ToString());
                     }
                     
                     // get subs, mark, delete if not there
                     // add on app_list_ops for deletes and adds
                     foreach (int appid in sub.AppIDs)
                     {
-                        sw_apps_subs.WriteLine(String.Format("{0}\t{1}\t{2}", appid, sub.SubID, cdr_id));
+                        sw_apps_subs.Write(String.Format("{0}\t{1}\t{2}\r\n", appid, sub.SubID, cdr_id));
                     }
                 }
             }
