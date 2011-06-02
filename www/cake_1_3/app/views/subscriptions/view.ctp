@@ -5,13 +5,16 @@
 		// optimize this?
 		$userBuffer = '';
 		$userSubLinks = array('OnPurchaseGrantGuestPassPackage', 'OnPurchaseGrantGuestPassPackage1', 'OnPurchaseGrantGuestPassPackage2', 'OnPurchaseGrantGuestPassPackage3', 'OnPurchaseGrantGuestPassPackage4');
-		$userAppLinks = array('AppIDOwnedRequired');
+		$userAppLinks = array('AppIDOwnedRequired', 'DontGrantIfAppIDOwned');
+		$userTimeFormats = array('ExpiryTime');
 		
 		foreach($data['ExtendedInfo'] as $key => $value) {
 			if(in_array($key, $userSubLinks)) {
 				$value = $format->sublink($value);
 			} else if(in_array($key, $userAppLinks)) {
 				$value = $format->applink($value);
+			} else if(in_array($key, $userTimeFormats)) {
+				$value = date('r', $value);
 			}
 			
 			if(substr($value,0,7) == 'http://') {
