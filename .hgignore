@@ -3,3 +3,7 @@ glob:*.blob
 glob:Debug
 glob:UniServer
 glob:tmp
+glob:obj
+glob:bin
+glob:*.vsp
+glob:*.exe

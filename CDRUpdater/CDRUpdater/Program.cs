@@ -6,6 +6,7 @@ using System.IO;
 using SteamKit2;
 using MySql.Data.MySqlClient;
 using System.Data;
+using System.Diagnostics;
 
 namespace CDRUpdater
 {
@@ -15,6 +16,8 @@ namespace CDRUpdater
         const string CDRBLOB = "CDR.blob";
         const string SQL_CONNECTION_STRING = "connection_string.cfg";
 
+        const int CHUNK_PROCESS = 100;
+
         static void Main(string[] args)
         {
             string connection_string = File.ReadAllText(SQL_CONNECTION_STRING);
@@ -22,7 +25,7 @@ namespace CDRUpdater
             DebugLog.Write("CDR updater running!\n");
 
             DebugLog.Write("Downloading CDR...\n");
-
+            /*
             byte[] cdr = null;
             try
             {
@@ -52,8 +55,8 @@ namespace CDRUpdater
                 DebugLog.Write("Unable to download CDR: {0}\n", ex.ToString());
                 return;
             }
-
-            //byte[] cdr = File.ReadAllBytes(CDRBLOB);
+            */
+            byte[] cdr = File.ReadAllBytes(CDRBLOB);
             byte[] current_hash = CryptoHelper.SHAHash(cdr);
 
             string hash_hex = current_hash.Aggregate(new StringBuilder(),
@@ -88,197 +91,197 @@ namespace CDRUpdater
 
             DebugLog.Write("Building updates..\n");
 
-
-            MySqlConnection connection = new MySqlConnection(connection_string);
-            connection.Open();
-
-            MySqlCommand command;
-
-
-            // insert CDR
-            command = connection.CreateCommand();
+            SQLConnection connection = new SQLConnection(connection_string);
 
             // the current CDR is always the most recently processed
-            command.CommandText = "SELECT cdr_id FROM cdr ORDER BY date_processed DESC LIMIT 1";
+            int prev_cdr_id = Convert.ToInt32(connection.ExecuteScalar("SELECT cdr_id FROM cdr ORDER BY date_processed DESC LIMIT 1"));
 
-            int prev_cdr_id = Convert.ToInt32(command.ExecuteScalar());
-
-            command.CommandText = String.Format("INSERT INTO cdr (hash, version, date_updated, date_processed, app_count, sub_count) VALUES ('{0}', {1}, '{2}', '{3}', {4}, {5})",
+            connection.Execute(String.Format("INSERT INTO cdr (hash, version, date_updated, date_processed, app_count, sub_count) VALUES ('{0}', {1}, '{2}', '{3}', {4}, {5})",
                                                     hash_hex, CDRBlob.VersionNum, String.Format("{0:u}", CDRBlob.LastChangedExistingAppOrSubscriptionTime.ToDateTime()),
                                                     String.Format("{0:u}", DateTime.Now),
                                                     CDRBlob.Apps.Count,
-                                                    CDRBlob.Subs.Count);
+                                                    CDRBlob.Subs.Count));
 
-            command.ExecuteNonQuery();
-
-            command.CommandText = "SELECT last_insert_id()";
-
-            int cdr_id = Convert.ToInt32(command.ExecuteScalar());
+            int cdr_id = Convert.ToInt32(connection.ExecuteScalar("SELECT last_insert_id()"));
 
 
             // capture app data and add app_* tables
-            DataSet data = new DataSet();
-            command = connection.CreateCommand();
-            MySqlDataAdapter adapter = new MySqlDataAdapter(command);
-
-
             using (StreamWriter sw_app = new StreamWriter(new FileStream("app.data", FileMode.Create)))
             using (StreamWriter sw_app_capture = new StreamWriter(new FileStream("app_capture.data", FileMode.Create)))
             using (StreamWriter sw_app_filesystem = new StreamWriter(new FileStream("app_filesystem.data", FileMode.Create)))
             using (StreamWriter sw_app_version = new StreamWriter(new FileStream("app_version.data", FileMode.Create)))
             {
-                foreach (App app in CDRBlob.Apps)
+                for(int i = 0; i < CDRBlob.Apps.Count; i += CHUNK_PROCESS)
                 {
-                    command.CommandText = "SELECT * FROM app WHERE app_id = " + app.AppID;
-                    data.Reset();
-                    adapter.Fill(data);
+                    List<string> ids = new List<string>();
 
-                    DataRow app_info = null;
+                    SQLTable<App> appTable = new SQLTable<App>(new string[] { "app_id" });
+                    SQLTable<AppFilesystem> fsTable = new SQLTable<AppFilesystem>(new string[] { "app_id", "app_id_filesystem", "mount_name" });
+                    SQLTable<AppVersion> versionTable = new SQLTable<AppVersion>(new string[] { "app_id", "description", "version_id" });
 
-                    if(data.Tables[0].Rows.Count > 0)
-                        app_info = data.Tables[0].Rows[0];
-                    
-                    string app_current_data = null;
-                    string app_state_data = null;
-
-                    SQLQuery.BuildDataInsertFromTypeWithChanges(app, app_info, cdr_id, prev_cdr_id, out app_current_data, out app_state_data);
-
-                    sw_app.Write(app_current_data + "\r\n");
-
-                    if (app_state_data != null)
+                    for (int x = i; x < i + CHUNK_PROCESS && x < CDRBlob.Apps.Count; x++)
                     {
-                        sw_app_capture.Write(app_state_data + "\r\n");
-                    }
-                    else if (app_info == null)
-                    {
-                        // capture created status
-                        sw_app_capture.Write("{0}\t1\t{1}\r\n", prev_cdr_id, app.AppID.ToString());
+                        string id = CDRBlob.Apps[x].AppID.ToString();
+                        ids.Add(id);
+
+                        appTable.Attach(CDRBlob.Apps[x], id.GetHashCode(), CDRBlob.Apps[x].AppID);
+
+                        foreach (AppFilesystem fs in CDRBlob.Apps[x].Filesystems)
+                        {
+                            fsTable.Attach(fs, (id + fs.AppID.ToString() + fs.MountName).GetHashCode(), CDRBlob.Apps[x].AppID);
+                        }
+
+                        foreach (AppVersion appv in CDRBlob.Apps[x].Versions)
+                        {
+                            versionTable.Attach(appv, (id + appv.Description + appv.VersionID.ToString()).GetHashCode(), CDRBlob.Apps[x].AppID);
+                        }
                     }
 
+                    var reader = connection.ExecuteReader("SELECT * FROM app WHERE app_id IN (" + String.Join(",", ids.ToArray()) + ")");
 
-                    command.CommandText = "SELECT * FROM app_filesystem WHERE app_id = " + app.AppID + " AND cdr_id_last IS NULL";
-                    data.Reset();
-                    adapter.Fill(data);
-
-                    var fsData = data.Tables[0].AsEnumerable();
-
-                    foreach (AppFilesystem fs in app.Filesystems)
+                    appTable.Process(reader, (row, p_reader, appid) =>
                     {
-                        var row = fsData.Where(c => c["app_id_filesystem"].ToString() == fs.AppID.ToString() && c["mount_name"].ToString() == fs.MountName).ElementAtOrDefault(0);
+                        string app_current_data = null;
+                        string app_state_data = null;
 
-                        // duplicate, ex railworks
-                        if (row != null && row.RowState == DataRowState.Modified)
-                            continue;
+                        SQLQuery.BuildDataInsertFromTypeWithChanges(row, p_reader, cdr_id, prev_cdr_id, out app_current_data, out app_state_data);
 
-                        SQLQuery.BuildSubDataInsertFromType("app_filesystem", fs, row, app.AppID, cdr_id, prev_cdr_id, sw_app_filesystem);
+                        sw_app.Write(app_current_data + "\r\n");
 
-                        if (row != null)
-                            row.SetModified();
-                    }
-
-                    var toDelete = fsData.Where(c => c.RowState != DataRowState.Modified);
-
-                    foreach (DataRow row in toDelete)
+                        if (app_state_data != null)
+                        {
+                            sw_app_capture.Write(app_state_data + "\r\n");
+                        }
+                        else if (p_reader == null)
+                        {
+                            sw_app_capture.Write("{0}\t1\t{1}\r\n", prev_cdr_id, appid.ToString());
+                        }
+                    },
+                    (p_reader) =>
                     {
-                        SQLQuery.CloseoutRow(typeof(AppFilesystem), row, prev_cdr_id, sw_app_filesystem);
-                    }
+                         DebugLog.Write("Warning, app id {0} is missing from CDR but left in DB\n", p_reader["app_id"]);
+
+                         Debug.Fail("Unable to continue, missing appID");
+                    });
+
+                    reader.Close();
 
 
-                    command.CommandText = "SELECT * FROM app_version WHERE app_id = " + app.AppID + " AND cdr_id_last IS NULL";
-                    data.Reset();
-                    adapter.Fill(data);
+                    reader = connection.ExecuteReader("SELECT * FROM app_filesystem WHERE app_id IN (" + String.Join(",", ids.ToArray()) + ") AND cdr_id_last IS NULL");
 
-                    var vData = data.Tables[0].AsEnumerable();
-
-                    foreach (AppVersion appv in app.Versions)
+                    fsTable.Process(reader, (row, p_reader, appid) =>
                     {
-                        var row = vData.Where(c => c["description"].ToString() == appv.Description && c["version_id"].ToString() == appv.VersionID.ToString()).ElementAtOrDefault(0);
-
-                        // duplicate, ex 501. I don't think this is related to rollbacks
-                        if (row != null && row.RowState == DataRowState.Modified)
-                            continue;
-
-                        SQLQuery.BuildSubDataInsertFromType("app_version", appv, row, app.AppID, cdr_id, prev_cdr_id, sw_app_version);
-
-                        if (row != null)
-                            row.SetModified();
-                    }
-
-                    toDelete = fsData.Where(c => c.RowState != DataRowState.Modified);
-
-                    foreach (DataRow row in toDelete)
+                        SQLQuery.BuildSubDataInsertFromType("app_filesystem", row, p_reader, appid, cdr_id, prev_cdr_id, sw_app_filesystem);
+                    },
+                    (p_reader) =>
                     {
-                        SQLQuery.CloseoutRow(typeof(AppVersion), row, prev_cdr_id, sw_app_version);
-                    }
+                        SQLQuery.CloseoutRow(typeof(AppFilesystem), p_reader, prev_cdr_id, sw_app_filesystem);
+                    });
+
+                    reader.Close();
 
 
+                    reader = connection.ExecuteReader("SELECT * FROM app_version WHERE app_id IN (" + String.Join(",", ids.ToArray()) + ") AND cdr_id_last IS NULL");
+
+                    versionTable.Process(reader, (row, p_reader, appid) =>
+                    {
+                        SQLQuery.BuildSubDataInsertFromType("app_version", row, p_reader, appid, cdr_id, prev_cdr_id, sw_app_version);
+                    },
+                    (p_reader) =>
+                    {
+                        SQLQuery.CloseoutRow(typeof(AppVersion), p_reader, prev_cdr_id, sw_app_version);
+                    });
+
+                    reader.Close();
                 }
             }
 
+            DebugLog.Write("Built app updates...\n");
+            DebugLog.Write("Building sub updates...\n");
 
             // capture sub data
-
             using (StreamWriter sw_sub = new StreamWriter(new FileStream("sub.data", FileMode.Create)))
             using (StreamWriter sw_sub_capture = new StreamWriter(new FileStream("sub_capture.data", FileMode.Create)))
             using (StreamWriter sw_apps_subs = new StreamWriter(new FileStream("apps_subs.data", FileMode.Create)))
             {
-                foreach (Sub sub in CDRBlob.Subs)
+                for (int i = 0; i < CDRBlob.Subs.Count; i += CHUNK_PROCESS)
                 {
-                    command.CommandText = "SELECT * FROM sub WHERE sub_id = " + sub.SubID;
-                    data.Reset();
-                    adapter.Fill(data);
+                    List<string> ids = new List<string>();
 
-                    DataRow sub_info = null;
+                    SQLTable<Sub> subTable = new SQLTable<Sub>(new string[] { "sub_id" });
+                    SQLTable<int> appSubsTable = new SQLTable<int>(new string[] { "sub_id", "app_id" });
 
-                    if (data.Tables[0].Rows.Count > 0)
-                        sub_info = data.Tables[0].Rows[0];
-
-                    string sub_current_data = null;
-                    string sub_state_data = null;
-
-                    SQLQuery.BuildDataInsertFromTypeWithChanges(sub, sub_info, cdr_id, prev_cdr_id, out sub_current_data, out sub_state_data);
-
-                    sw_sub.Write(sub_current_data + "\r\n");
-
-                    if (sub_state_data != null)
+                    for (int x = i; x < i + CHUNK_PROCESS && x < CDRBlob.Subs.Count; x++)
                     {
-                        sw_sub_capture.Write(sub_state_data + "\r\n");
+                        string id = CDRBlob.Subs[x].SubID.ToString();
+                        ids.Add(id);
+
+                        subTable.Attach(CDRBlob.Subs[x], id.GetHashCode(), CDRBlob.Subs[x].SubID);
+
+                        foreach (int appid in CDRBlob.Subs[x].AppIDs)
+                        {
+                            appSubsTable.Attach(appid, (id + appid.ToString()).GetHashCode(), CDRBlob.Subs[x].SubID);
+                        }
                     }
-                    else if (sub_info == null)
+
+                    var reader = connection.ExecuteReader("SELECT * FROM sub WHERE sub_id IN (" + String.Join(",", ids.ToArray()) + ")");
+
+                    subTable.Process(reader, (row, p_reader, subid) =>
                     {
-                        // capture created status
-                        sw_sub_capture.Write("{0}\t1\t{1}\r\n", prev_cdr_id, sub.SubID.ToString());
-                    }
-                    
-                    // get subs, mark, delete if not there
-                    // add on app_list_ops for deletes and adds
-                    foreach (int appid in sub.AppIDs)
+                        string sub_current_data = null;
+                        string sub_state_data = null;
+
+                        SQLQuery.BuildDataInsertFromTypeWithChanges(row, p_reader, cdr_id, prev_cdr_id, out sub_current_data, out sub_state_data);
+
+                        sw_sub.Write(sub_current_data + "\r\n");
+
+                        if (sub_state_data != null)
+                        {
+                            sw_sub_capture.Write(sub_state_data + "\r\n");
+                        }
+                        else if (p_reader == null)
+                        {
+                            sw_sub_capture.Write("{0}\t1\t{1}\r\n", prev_cdr_id, subid.ToString());
+                        }
+                    },
+                    (p_reader) =>
                     {
-                        sw_apps_subs.Write(String.Format("{0}\t{1}\t{2}\r\n", appid, sub.SubID, cdr_id));
-                    }
+                        DebugLog.Write("Warning, sub id {0} is missing from CDR but left in DB\n", p_reader["sub_id"]);
+
+                        Debug.Fail("Unable to continue, missing subID");
+                    });
+
+                    reader.Close();
+
+                    reader = connection.ExecuteReader("SELECT * FROM apps_subs WHERE sub_id IN (" + String.Join(",", ids.ToArray()) + ") AND cdr_id_last IS NULL");
+
+                    appSubsTable.Process(reader, (row, p_reader, subid) =>
+                    {
+                        if (p_reader == null)
+                        {
+                            sw_apps_subs.Write(String.Format("{0}\t{1}\t{2}\t\\N\r\n", row, subid, cdr_id));
+                        }
+                    },
+                    (p_reader) =>
+                    {
+                        sw_apps_subs.Write(String.Format("{0}\t{1}\t{2}\t{3}\r\n", p_reader["app_id"], p_reader["sub_id"], p_reader["cdr_id"], prev_cdr_id));
+                    });
+
+                    reader.Close();
                 }
             }
 
-            string[] files = new string[] { "app.data", "app_capture.data", "sub.data", "sub_capture.data", "app_filesystem.data", "app_version.data" };
-            string[] tables = new string[] { "app", "app_state_capture", "sub", "sub_state_capture", "app_filesystem", "app_version" };
+            DebugLog.Write("Built sub updates...\n");
+            DebugLog.Write("Updating database...\n");
+
+            string[] files = new string[] { "app.data", "app_capture.data", "sub.data", "sub_capture.data", "app_filesystem.data", "app_version.data", "apps_subs.data" };            string[] tables = new string[] { "app", "app_state_capture", "sub", "sub_state_capture", "app_filesystem", "app_version", "apps_subs" };
 
             for (int i = 0; i < files.Length; i++)
             {
-                command.CommandText = String.Format("LOAD DATA INFILE '{0}' REPLACE INTO TABLE {1} LINES TERMINATED BY \"\r\n\"", SQLQuery.EscapeValue(Path.Combine(Environment.CurrentDirectory, files[i]), false), tables[i]);
-
-                command.ExecuteNonQuery();
+                connection.Execute(String.Format("LOAD DATA INFILE '{0}' REPLACE INTO TABLE {1} LINES TERMINATED BY \"\r\n\"", SQLQuery.EscapeValue(Path.Combine(Environment.CurrentDirectory, files[i]), false), tables[i]));
             }
 
-            files = new string[] { "apps_subs.data" };
-            tables = new string[] { "apps_subs" };
-
-            for (int i = 0; i < files.Length; i++)
-            {
-                command.CommandText = String.Format("LOAD DATA INFILE '{0}' IGNORE INTO TABLE {1} LINES TERMINATED BY \"\r\n\"", SQLQuery.EscapeValue(Path.Combine(Environment.CurrentDirectory, files[i]), false), tables[i]);
-
-                command.ExecuteNonQuery();
-            }
-
+            DebugLog.Write("Finished.\n");
         }
     }
 }

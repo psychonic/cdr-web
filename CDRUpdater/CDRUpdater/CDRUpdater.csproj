@@ -54,7 +54,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQL\SqlColumn.cs" />
+    <Compile Include="SQL\SQLConnection.cs" />
     <Compile Include="SQL\SQLQuery.cs" />
+    <Compile Include="SQL\SQLTable.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="E:\steamre\SteamKit2\SteamKit2\SteamKit2.csproj">
