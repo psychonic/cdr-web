@@ -4,7 +4,7 @@
 --
 -- Host: 127.0.0.1:3306
 
--- Generation Time: May 30, 2011 at 12:36 AM
+-- Generation Time: Jun 24, 2011 at 12:27 AM
 -- Server version: 5.5.12
 -- PHP Version: 5.3.6
 
@@ -40,6 +40,8 @@ CREATE TABLE `app` (
   `use_filesystem_dvr` tinyint(1) NOT NULL,
   `manifest_only` tinyint(1) NOT NULL,
   `app_of_manifest_only` int(11) NOT NULL,
+  `sub_count` int(11) NOT NULL,
+  `date_updated` datetime NOT NULL,
   PRIMARY KEY (`app_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -53,6 +55,7 @@ CREATE TABLE `apps_subs` (
   `app_id` int(11) NOT NULL,
   `sub_id` int(11) NOT NULL,
   `cdr_id` int(11) NOT NULL,
+  `cdr_id_last` int(11) DEFAULT NULL,
   PRIMARY KEY (`app_id`,`sub_id`),
   KEY `cdr_id` (`cdr_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -70,8 +73,8 @@ CREATE TABLE `app_filesystem` (
   `app_id_filesystem` int(11) NOT NULL,
   `mount_name` varchar(255) NOT NULL,
   `is_optional` tinyint(1) NOT NULL,
-  PRIMARY KEY (`app_id`,`cdr_id`,`app_id_filesystem`,`mount_name`),
-  KEY `cdr_id_last` (`cdr_id_last`)
+  PRIMARY KEY (`app_id`,`cdr_id`),
+  KEY `cdr_id_last` (`cdr_id`,`cdr_id_last`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -102,6 +105,7 @@ CREATE TABLE `app_state_capture` (
   `use_filesystem_dvr` tinyint(1) DEFAULT NULL,
   `manifest_only` tinyint(1) DEFAULT NULL,
   `app_of_manifest_only` int(11) DEFAULT NULL,
+  `sub_count` int(11) DEFAULT NULL,
   PRIMARY KEY (`cdr_id`,`app_id`),
   KEY `created` (`created`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -174,6 +178,8 @@ CREATE TABLE `sub` (
   `territory_code` int(11) NOT NULL,
   `is_steam3_subscription` tinyint(1) NOT NULL,
   `extended_info` text NOT NULL,
+  `app_count` int(11) NOT NULL,
+  `date_updated` datetime NOT NULL,
   PRIMARY KEY (`sub_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -208,6 +214,7 @@ CREATE TABLE `sub_state_capture` (
   `territory_code` int(11) DEFAULT NULL,
   `is_steam3_subscription` tinyint(1) DEFAULT NULL,
   `extended_info` text,
+  `app_count` int(11) DEFAULT NULL,
   PRIMARY KEY (`cdr_id`,`sub_id`),
   KEY `created` (`created`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
