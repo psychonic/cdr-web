@@ -34,8 +34,8 @@ class ContentRecordsController extends AppController
 		$appstate_modified = $this->ContentRecord->AppStateCapture->find('all', array('conditions' => array('cdr_id' => $nextCDR, 'created' => 0), 'fields' => array('app_id', 'created', 'name'), 'order' => array('app_id ASC')));
 		
 		$appnames = null;
-		
-		if(count($appstate_created) + count($appstate_modified) < 500) {
+
+		if(count($appstate_created) + count($appstate_modified) < 2500) {
 			$appnames = array();
 			$ids = array();
 			
@@ -61,7 +61,7 @@ class ContentRecordsController extends AppController
 		
 		$subnames = null;
 		
-		if(count($substate_created) + count($substate_modified) < 500) {
+		if(count($substate_created) + count($substate_modified) < 2000) {
 			$subnames = array();
 			$ids = array();
 			

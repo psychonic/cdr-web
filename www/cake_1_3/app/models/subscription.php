@@ -22,13 +22,25 @@ class Subscription extends AppModel {
 	function bindCapture() {
 		$this->linkModel(array('SubStateCapture'));
 	}
+
+	function getHistoryConditions() {
+		if(!isset($this->cdr_target)) {
+			$hist_condition = array('cdr_id_last' => null);
+		} else {
+			$hist_condition = array('cdr_id <=' => (int)$this->cdr_target, 'OR' => array('cdr_id_last >=' => (int)$this->cdr_target, 'cdr_id_last' => null));
+		}
+		
+		return $hist_condition;
+	}
 	
 	function bindMany() {
+		$hist_condition = $this->getHistoryConditions();	
+		
 		$this->linkModel(array('AppsSubs', 'Application'));
 		
 		$this->Application->virtualFields['cdr_id'] = 'AppsSubs.cdr_id';
 		
-		$this->Application->bindModel(array('hasOne'=>array('AppsSubs')), false);
+		$this->Application->bindModel(array('hasOne'=>array('AppsSubs' => array('conditions' => $hist_condition) )), false);
 	}
 	
 	function linkModel($model) {

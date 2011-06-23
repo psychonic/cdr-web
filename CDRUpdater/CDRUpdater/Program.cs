@@ -25,7 +25,7 @@ namespace CDRUpdater
             DebugLog.Write("CDR updater running!\n");
 
             DebugLog.Write("Downloading CDR...\n");
-            /*
+
             byte[] cdr = null;
             try
             {
@@ -55,8 +55,7 @@ namespace CDRUpdater
                 DebugLog.Write("Unable to download CDR: {0}\n", ex.ToString());
                 return;
             }
-            */
-            byte[] cdr = File.ReadAllBytes(CDRBLOB);
+
             byte[] current_hash = CryptoHelper.SHAHash(cdr);
 
             string hash_hex = current_hash.Aggregate(new StringBuilder(),
@@ -96,13 +95,99 @@ namespace CDRUpdater
             // the current CDR is always the most recently processed
             int prev_cdr_id = Convert.ToInt32(connection.ExecuteScalar("SELECT cdr_id FROM cdr ORDER BY date_processed DESC LIMIT 1"));
 
+            DateTime now = DateTime.Now;
+
             connection.Execute(String.Format("INSERT INTO cdr (hash, version, date_updated, date_processed, app_count, sub_count) VALUES ('{0}', {1}, '{2}', '{3}', {4}, {5})",
                                                     hash_hex, CDRBlob.VersionNum, String.Format("{0:u}", CDRBlob.LastChangedExistingAppOrSubscriptionTime.ToDateTime()),
-                                                    String.Format("{0:u}", DateTime.Now),
+                                                    String.Format("{0:u}", now),
                                                     CDRBlob.Apps.Count,
                                                     CDRBlob.Subs.Count));
 
             int cdr_id = Convert.ToInt32(connection.ExecuteScalar("SELECT last_insert_id()"));
+
+            DebugLog.Write("Building sub updates...\n");
+
+            Dictionary<uint, int> appSubCounts = new Dictionary<uint, int>();
+
+            // capture sub data
+            using (StreamWriter sw_sub = new StreamWriter(new FileStream("sub.data", FileMode.Create)))
+            using (StreamWriter sw_sub_capture = new StreamWriter(new FileStream("sub_capture.data", FileMode.Create)))
+            using (StreamWriter sw_apps_subs = new StreamWriter(new FileStream("apps_subs.data", FileMode.Create)))
+            {
+                for (int i = 0; i < CDRBlob.Subs.Count; i += CHUNK_PROCESS)
+                {
+                    List<string> ids = new List<string>();
+
+                    SQLTable<Sub> subTable = new SQLTable<Sub>(new string[] { "sub_id" });
+                    SQLTable<int> appSubsTable = new SQLTable<int>(new string[] { "sub_id", "app_id" });
+
+                    for (int x = i; x < i + CHUNK_PROCESS && x < CDRBlob.Subs.Count; x++)
+                    {
+                        string id = CDRBlob.Subs[x].SubID.ToString();
+                        ids.Add(id);
+
+                        subTable.Attach(CDRBlob.Subs[x], id.GetHashCode(), CDRBlob.Subs[x].SubID);
+
+                        CDRBlob.Subs[x].virtual_app_count = CDRBlob.Subs[x].AppIDs.Count;
+
+                        foreach (uint appid in CDRBlob.Subs[x].AppIDs)
+                        {
+                            appSubsTable.Attach((int)appid, (id + appid.ToString()).GetHashCode(), CDRBlob.Subs[x].SubID);
+
+                            appSubCounts[appid] = (appSubCounts.ContainsKey(appid) ? appSubCounts[appid] + 1 : 1 );
+                        }
+                    }
+
+                    var reader = connection.ExecuteReader("SELECT * FROM sub WHERE sub_id IN (" + String.Join(",", ids.ToArray()) + ")");
+
+                    subTable.Process(reader, (row, p_reader, subid) =>
+                    {
+                        string sub_current_data = null;
+                        string sub_state_data = null;
+
+                        SQLQuery.BuildDataInsertFromTypeWithChanges(row, p_reader, cdr_id, prev_cdr_id, out sub_current_data, out sub_state_data);
+
+                        sw_sub.Write(sub_current_data + String.Format("\t{0:u}", now) + "\r\n");
+
+                        if (sub_state_data != null)
+                        {
+                            sw_sub_capture.Write(sub_state_data + "\r\n");
+                        }
+                        else if (p_reader == null)
+                        {
+                            sw_sub_capture.Write("{0}\t1\t{1}\r\n", prev_cdr_id, subid.ToString());
+                        }
+                    },
+                    (p_reader) =>
+                    {
+                        DebugLog.Write("Warning, sub id {0} is missing from CDR but left in DB\n", p_reader["sub_id"]);
+
+                        Debug.Fail("Unable to continue, missing subID");
+                    });
+
+                    reader.Close();
+
+                    reader = connection.ExecuteReader("SELECT * FROM apps_subs WHERE sub_id IN (" + String.Join(",", ids.ToArray()) + ") AND cdr_id_last IS NULL");
+
+                    appSubsTable.Process(reader, (row, p_reader, subid) =>
+                    {
+                        if (p_reader == null)
+                        {
+                            sw_apps_subs.Write(String.Format("{0}\t{1}\t{2}\t\\N\r\n", row, subid, cdr_id));
+                        }
+                    },
+                    (p_reader) =>
+                    {
+                        sw_apps_subs.Write(String.Format("{0}\t{1}\t{2}\t{3}\r\n", p_reader["app_id"], p_reader["sub_id"], p_reader["cdr_id"], prev_cdr_id));
+                    });
+
+                    reader.Close();
+                }
+            }
+
+
+            DebugLog.Write("Built sub updates...\n");
+            DebugLog.Write("Building app updates...\n");
 
 
             // capture app data and add app_* tables
@@ -126,6 +211,8 @@ namespace CDRUpdater
 
                         appTable.Attach(CDRBlob.Apps[x], id.GetHashCode(), CDRBlob.Apps[x].AppID);
 
+                        CDRBlob.Apps[x].virtual_sub_count = (appSubCounts.ContainsKey(CDRBlob.Apps[x].AppID) ? appSubCounts[CDRBlob.Apps[x].AppID] : 0);
+
                         foreach (AppFilesystem fs in CDRBlob.Apps[x].Filesystems)
                         {
                             fsTable.Attach(fs, (id + fs.AppID.ToString() + fs.MountName).GetHashCode(), CDRBlob.Apps[x].AppID);
@@ -146,7 +233,7 @@ namespace CDRUpdater
 
                         SQLQuery.BuildDataInsertFromTypeWithChanges(row, p_reader, cdr_id, prev_cdr_id, out app_current_data, out app_state_data);
 
-                        sw_app.Write(app_current_data + "\r\n");
+                        sw_app.Write(app_current_data + String.Format("\t{0:u}", now) + "\r\n");
 
                         if (app_state_data != null)
                         {
@@ -197,81 +284,6 @@ namespace CDRUpdater
             }
 
             DebugLog.Write("Built app updates...\n");
-            DebugLog.Write("Building sub updates...\n");
-
-            // capture sub data
-            using (StreamWriter sw_sub = new StreamWriter(new FileStream("sub.data", FileMode.Create)))
-            using (StreamWriter sw_sub_capture = new StreamWriter(new FileStream("sub_capture.data", FileMode.Create)))
-            using (StreamWriter sw_apps_subs = new StreamWriter(new FileStream("apps_subs.data", FileMode.Create)))
-            {
-                for (int i = 0; i < CDRBlob.Subs.Count; i += CHUNK_PROCESS)
-                {
-                    List<string> ids = new List<string>();
-
-                    SQLTable<Sub> subTable = new SQLTable<Sub>(new string[] { "sub_id" });
-                    SQLTable<int> appSubsTable = new SQLTable<int>(new string[] { "sub_id", "app_id" });
-
-                    for (int x = i; x < i + CHUNK_PROCESS && x < CDRBlob.Subs.Count; x++)
-                    {
-                        string id = CDRBlob.Subs[x].SubID.ToString();
-                        ids.Add(id);
-
-                        subTable.Attach(CDRBlob.Subs[x], id.GetHashCode(), CDRBlob.Subs[x].SubID);
-
-                        foreach (int appid in CDRBlob.Subs[x].AppIDs)
-                        {
-                            appSubsTable.Attach(appid, (id + appid.ToString()).GetHashCode(), CDRBlob.Subs[x].SubID);
-                        }
-                    }
-
-                    var reader = connection.ExecuteReader("SELECT * FROM sub WHERE sub_id IN (" + String.Join(",", ids.ToArray()) + ")");
-
-                    subTable.Process(reader, (row, p_reader, subid) =>
-                    {
-                        string sub_current_data = null;
-                        string sub_state_data = null;
-
-                        SQLQuery.BuildDataInsertFromTypeWithChanges(row, p_reader, cdr_id, prev_cdr_id, out sub_current_data, out sub_state_data);
-
-                        sw_sub.Write(sub_current_data + "\r\n");
-
-                        if (sub_state_data != null)
-                        {
-                            sw_sub_capture.Write(sub_state_data + "\r\n");
-                        }
-                        else if (p_reader == null)
-                        {
-                            sw_sub_capture.Write("{0}\t1\t{1}\r\n", prev_cdr_id, subid.ToString());
-                        }
-                    },
-                    (p_reader) =>
-                    {
-                        DebugLog.Write("Warning, sub id {0} is missing from CDR but left in DB\n", p_reader["sub_id"]);
-
-                        Debug.Fail("Unable to continue, missing subID");
-                    });
-
-                    reader.Close();
-
-                    reader = connection.ExecuteReader("SELECT * FROM apps_subs WHERE sub_id IN (" + String.Join(",", ids.ToArray()) + ") AND cdr_id_last IS NULL");
-
-                    appSubsTable.Process(reader, (row, p_reader, subid) =>
-                    {
-                        if (p_reader == null)
-                        {
-                            sw_apps_subs.Write(String.Format("{0}\t{1}\t{2}\t\\N\r\n", row, subid, cdr_id));
-                        }
-                    },
-                    (p_reader) =>
-                    {
-                        sw_apps_subs.Write(String.Format("{0}\t{1}\t{2}\t{3}\r\n", p_reader["app_id"], p_reader["sub_id"], p_reader["cdr_id"], prev_cdr_id));
-                    });
-
-                    reader.Close();
-                }
-            }
-
-            DebugLog.Write("Built sub updates...\n");
             DebugLog.Write("Updating database...\n");
 
             string[] files = new string[] { "app.data", "app_capture.data", "sub.data", "sub_capture.data", "app_filesystem.data", "app_version.data", "apps_subs.data" };            string[] tables = new string[] { "app", "app_state_capture", "sub", "sub_state_capture", "app_filesystem", "app_version", "apps_subs" };

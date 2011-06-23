@@ -14,7 +14,7 @@ class HistoryComponent extends Object {
 			foreach($capture_state as $hist_data) {
 				$hcapture = $hist_data[$this->controller->modelCapture];
 				
-				if($hcapture[$key] != NULL && $current_state[$this->controller->modelView][$key] != $hcapture[$key]) {
+				if($key != 'date_updated' && $hcapture[$key] != NULL && $current_state[$this->controller->modelView][$key] != $hcapture[$key]) {
 					$current_state[$this->controller->modelView][$key] = $hcapture[$key];
 					break;
 				}
@@ -53,7 +53,7 @@ class HistoryComponent extends Object {
 			} else {
 				// this is a slightly different loop than incrementalBuildState, we want to iterate all the changed columns in a row before we move on
 				foreach($hist as $key => $value) {
-					if($ncapture[$key] != null && $key != $this->controller->modelPK) {
+					if($key != 'date_updated' && $ncapture[$key] != null && $key != $this->controller->modelPK) {
 						$changed[] = $key . ' => ' . $hist[$key];
 						$hist[$key] = $ncapture[$key];
 					}

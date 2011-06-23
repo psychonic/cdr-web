@@ -90,9 +90,16 @@
 		// 0 is the default, even though it could be technically correct
 		$manifestOnly = $app_info['app_of_manifest_only'] > 0 ? $format->applink($app_info['app_of_manifest_only']) :  $app_info['app_of_manifest_only'];
 		
+		if(isset($reference_cdr)) {
+			$bonus = array( $format->column('CDR ID'), $format->cdrlink($reference_cdr) ); 
+		} else {
+			$bonus = array( $format->column('Last Updated'), $app_info['date_updated'] ); 
+		}
+		
 		echo $html->tableCells(
 							array(
 								array( $format->column('App ID'), $app_info['app_id'] ),
+								$bonus,
 								array( $format->column('Name'), $app_info['name'] ),
 								array( $format->column('Installation Directory'), $app_info['install_dir'] ),
 								array( $format->column('Minimum Cache Size'), $app_info['min_cache_size'] ),

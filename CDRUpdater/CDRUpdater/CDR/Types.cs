@@ -168,6 +168,9 @@ namespace CDRUpdater
         [BlobField(FieldKey = CDRAppRecordFields.eFieldAppOfManifestOnlyCache, Depth = 1)]
         [SqlColumn("app_of_manifest_only")]
         public uint AppOfManifestOnlyCache { get; set; }
+
+        [SqlColumn("sub_count")]
+        public int virtual_sub_count { get; set; }
     }
 
     public class SubRateLimit
@@ -295,6 +298,9 @@ namespace CDRUpdater
         [BlobField( FieldKey = CDRSubRecordFields.eFieldExtendedInfoRecord )]
         [SqlColumn("extended_info")]
         public Dictionary<string, string> ExtendedInfo { get; set; }
+
+        [SqlColumn("app_count")]
+        public int virtual_app_count { get; set; }
     }
 
     public class CDR
