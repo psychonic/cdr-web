@@ -6,6 +6,7 @@ using SteamKit2;
 using Jayrock.Json.Conversion;
 using System.Data;
 using System.IO;
+using MySql.Data.MySqlClient;
 
 namespace CDRUpdater
 {
@@ -13,25 +14,8 @@ namespace CDRUpdater
     {
         private static CacheContext SQLContext = new CacheContext();
 
-        /*public static string BuildDataInsertFromType(object x)
-        {
-            Type otype = x.GetType();
-            List<string> sqlDict = new List<string>();
 
-            foreach (var field in otype.GetCachedPropertyInfo(SQLContext))
-            {
-                SqlColumnAttribute cattrib = field.GetAttribute<SqlColumnAttribute>(SQLContext);
-
-                if (cattrib == null)
-                    continue;
-
-                sqlDict.Add(cattrib.Column, GetStringValue(field.PropertyType, field.GetValue(x, null)));
-            }
-
-            return String.Join("\t", sqlDict.Values);
-        }*/
-
-        public static void BuildDataInsertFromTypeWithChanges(object x, DataRow prev_data, int cdr_id, int prev_cdr_id, out string sql_data, out string sql_data_capture)
+        public static void BuildDataInsertFromTypeWithChanges(object x, MySqlDataReader prev_data, int cdr_id, int prev_cdr_id, out string sql_data, out string sql_data_capture)
         {
             Type otype = x.GetType();
             List<string> sqlDict = new List<string>();
@@ -82,7 +66,7 @@ namespace CDRUpdater
             sql_data_capture = String.Format("{0}\t0\t{1}", prev_cdr_id, String.Join("\t", sqlCaptureDict));
         }
 
-        public static void BuildSubDataInsertFromType(string table, object x, DataRow prev_data, uint appID, int cdr_id, int prev_cdr_id, StreamWriter writer)
+        public static void BuildSubDataInsertFromType(string table, object x, MySqlDataReader prev_data, uint appID, int cdr_id, int prev_cdr_id, StreamWriter writer)
         {
             Type otype = x.GetType();
             List<string> sqlDict = new List<string>();
@@ -122,7 +106,7 @@ namespace CDRUpdater
             writer.Write("{0}\t{1}\t\\N\t{2}\r\n", appID, cdr_id, String.Join("\t", sqlDict));
         }
 
-        public static void CloseoutRow(Type otype, DataRow row, int cdr_id_last, StreamWriter writer)
+        public static void CloseoutRow(Type otype, MySqlDataReader prev_data, int cdr_id_last, StreamWriter writer)
         {
             List<string> sqlDict = new List<string>();
 
@@ -134,12 +118,12 @@ namespace CDRUpdater
                     continue;
 
                 bool enclose = false;
-                string type_value = GetStringValue(field.PropertyType, row[cattrib.Column], false, out enclose);
+                string type_value = GetStringValue(field.PropertyType, prev_data[cattrib.Column], false, out enclose);
 
                 sqlDict.Add(EscapeValue(type_value, enclose));
             }
 
-            writer.WriteLine("{0}\t{1}\t{2}\t{3}\r\n", row["app_id"], row["cdr_id"], cdr_id_last, String.Join("\t", sqlDict));
+            writer.WriteLine("{0}\t{1}\t{2}\t{3}\r\n", prev_data["app_id"], prev_data["cdr_id"], cdr_id_last, String.Join("\t", sqlDict));
         }
 
         private static string GetStringValue(Type propType, object value, bool follow_types, out bool enclose)
