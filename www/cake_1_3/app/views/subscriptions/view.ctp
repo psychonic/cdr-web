@@ -24,9 +24,16 @@
 			$userBuffer .= $key . ' = ' . $value . '<br />';
 		}
 		
+		if(isset($reference_cdr)) {
+			$bonus = array( $format->column('CDR ID'), $format->cdrlink($reference_cdr) ); 
+		} else {
+			$bonus = array( $format->column('Last Updated'), $sub_info['date_updated'] ); 
+		}
+		
 		echo $html->tableCells(
 							array(
 								array( $format->column('Sub ID'), $sub_info['sub_id'] ),
+								$bonus,
 								array( $format->column('Name'), $sub_info['name'] ),
 								array( $format->column('Billing Type'), $sub_info['billing_type'] ),
 								array( $format->column('Cost (in cents)'), $sub_info['cost_in_cents'] ),

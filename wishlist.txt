@@ -1,8 +1,6 @@
-- last update on apps and subs (should be easy as updating date_updated on app and sub as touched)
+- keep cdr_id when viewing subs (for now it just shows the current sub associations)
 
-- apps_subs should be tracked like app_version with a cdr_id_last
-
-- search on fields not in index need to be appended to table
+- search on fields not in index need to be appended to table (virtual fields)
 - searching on key value fields, both key value pair and all values
 
 - cleanup all the $this->set in controllers

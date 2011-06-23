@@ -26,12 +26,18 @@ class Application extends AppModel {
 			return $this->AppStateCapture->find('all', array('conditions' => array('app_id' => $this->app_id, 'cdr_id >=' => $this->cdr_target), 'order' => 'cdr_id ASC'));
 	}
 	
-	function bindImmediate($versions) {
+	function getHistoryConditions() {
 		if(!isset($this->cdr_target)) {
 			$hist_condition = array('cdr_id_last' => null);
 		} else {
 			$hist_condition = array('cdr_id <=' => (int)$this->cdr_target, 'OR' => array('cdr_id_last >=' => (int)$this->cdr_target, 'cdr_id_last' => null));
 		}
+		
+		return $hist_condition;
+	}
+	
+	function bindImmediate($versions) {
+		$hist_condition = $this->getHistoryConditions();
 		
 		$many =  array(
 				'AppFilesystem' =>
@@ -66,11 +72,13 @@ class Application extends AppModel {
 	}
 	
 	function bindMany() {
+		$hist_condition = $this->getHistoryConditions();
+		
 		$this->linkModel(array('AppsSubs', 'Subscription'));
 		
 		$this->Subscription->virtualFields['cdr_id'] = 'AppsSubs.cdr_id';
 		
-		$this->Subscription->bindModel(array('hasOne'=>array('AppsSubs')), false);
+		$this->Subscription->bindModel(array('hasOne'=>array('AppsSubs' => array('conditions' => $hist_condition) )), false);
 	}
 	
 	function linkModel($model) {
