@@ -27,35 +27,45 @@ namespace CDRUpdater
             DebugLog.Write("Downloading CDR...\n");
 
             byte[] cdr = null;
-            try
+
+            if (args.Length == 1 && File.Exists(args[0]))
             {
-                byte[] hash = null;
+                cdr = File.ReadAllBytes(args[0]);
+                File.WriteAllBytes(CDRBLOB, cdr);
+                DebugLog.Write("Using historical blob {0}\n", args[0]);
+            }
+            else
+            {
                 try
                 {
-                    if(File.Exists(HASHFILE)) 
-                        hash = File.ReadAllBytes(HASHFILE);
-                }
-                catch (Exception ex2)
-                {
-                    DebugLog.Write("Warning: Unable to read cdr hashfile: {0}\n", ex2.ToString());
-                }
+                    byte[] hash = null;
+                    try
+                    {
+                        if (File.Exists(HASHFILE))
+                            hash = File.ReadAllBytes(HASHFILE);
+                    }
+                    catch (Exception ex2)
+                    {
+                        DebugLog.Write("Warning: Unable to read cdr hashfile: {0}\n", ex2.ToString());
+                    }
 
-                cdr = Downloader.DownloadCDR(hash);
+                    cdr = Downloader.DownloadCDR(hash);
 
-                if (cdr == null || cdr.Length == 0)
+                    if (cdr == null || cdr.Length == 0)
+                    {
+                        DebugLog.Write("No new CDR. All done!\n\n");
+                        return;
+                    }
+
+                    File.WriteAllBytes(CDRBLOB, cdr);
+                    File.WriteAllBytes(String.Format("CDR.blob.{0}", DateTime.Now.ToFileTime()), cdr);
+
+                }
+                catch (Exception ex)
                 {
-                    DebugLog.Write("No new CDR. All done!\n\n");
+                    DebugLog.Write("Unable to download CDR: {0}\n", ex.ToString());
                     return;
                 }
-
-                File.WriteAllBytes(CDRBLOB, cdr);
-                File.WriteAllBytes(String.Format("CDR.blob.{0}", DateTime.Now.ToFileTime()), cdr);
-
-            }
-            catch (Exception ex)
-            {
-                DebugLog.Write("Unable to download CDR: {0}\n", ex.ToString());
-                return;
             }
 
             byte[] current_hash = CryptoHelper.SHAHash(cdr);
@@ -150,8 +160,8 @@ namespace CDRUpdater
                         SQLQuery.BuildDataInsertFromTypeWithChanges(row, p_reader, cdr_id, prev_cdr_id, out sub_current_data, out sub_state_data);
 
                         string update;
-                        if (sub_state_data == null)
-                            update = p_reader["date_updated"].ToString();
+                        if (sub_state_data == null && p_reader != null)
+                            update = String.Format("{0:u}", p_reader["date_updated"]);
                         else
                             update = String.Format("{0:u}", now);
 
@@ -242,8 +252,8 @@ namespace CDRUpdater
                         SQLQuery.BuildDataInsertFromTypeWithChanges(row, p_reader, cdr_id, prev_cdr_id, out app_current_data, out app_state_data);
 
                         string update;
-                        if (app_state_data == null)
-                            update = p_reader["date_updated"].ToString();
+                        if (app_state_data == null && p_reader != null)
+                            update = String.Format("{0:u}", p_reader["date_updated"]);
                         else
                             update = String.Format("{0:u}", now);
 
