@@ -1,5 +1,7 @@
 - keep cdr_id when viewing subs (for now it just shows the current sub associations)
 
+- resolve app names for the view pages
+
 - figure out the true date on the cdr
 
 - search on fields not in index need to be appended to table (virtual fields)
