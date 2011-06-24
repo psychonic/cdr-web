@@ -4,7 +4,7 @@
 --
 -- Host: 127.0.0.1:3306
 
--- Generation Time: Jun 24, 2011 at 07:48 PM
+-- Generation Time: Jun 24, 2011 at 09:42 PM
 -- Server version: 5.5.12
 -- PHP Version: 5.3.6
 
@@ -73,8 +73,9 @@ CREATE TABLE `app_filesystem` (
   `app_id_filesystem` int(11) NOT NULL,
   `mount_name` varchar(255) NOT NULL,
   `is_optional` tinyint(1) NOT NULL,
-  PRIMARY KEY (`app_id`,`cdr_id`),
-  KEY `cdr_id_last` (`cdr_id`,`cdr_id_last`)
+  `platform` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`app_id`,`cdr_id`,`app_id_filesystem`,`mount_name`),
+  KEY `cdr_id_last` (`cdr_id_last`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -146,7 +147,7 @@ CREATE TABLE `cdr` (
   `app_count` int(11) NOT NULL,
   `sub_count` int(11) NOT NULL,
   PRIMARY KEY (`cdr_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
