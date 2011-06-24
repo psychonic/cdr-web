@@ -4,7 +4,7 @@
 --
 -- Host: 127.0.0.1:3306
 
--- Generation Time: Jun 24, 2011 at 12:27 AM
+-- Generation Time: Jun 24, 2011 at 07:48 PM
 -- Server version: 5.5.12
 -- PHP Version: 5.3.6
 
@@ -95,7 +95,6 @@ CREATE TABLE `app_state_capture` (
   `on_first_launch` int(11) DEFAULT NULL,
   `is_bandwidth_greedy` tinyint(1) DEFAULT NULL,
   `current_version_id` int(11) DEFAULT NULL,
-  `filesystems` text,
   `trickle_version_id` int(11) DEFAULT NULL,
   `user_defined` text,
   `beta_version_password` varchar(255) DEFAULT NULL,

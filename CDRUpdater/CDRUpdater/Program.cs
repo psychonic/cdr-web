@@ -49,6 +49,8 @@ namespace CDRUpdater
                 }
 
                 File.WriteAllBytes(CDRBLOB, cdr);
+                File.WriteAllBytes(String.Format("CDR.blob.{0}", DateTime.Now.ToFileTime()), cdr);
+
             }
             catch (Exception ex)
             {
@@ -70,7 +72,7 @@ namespace CDRUpdater
             {
                 DebugLog.Write("Warning: Unable to write to hashfile: {0}\n", ex2.ToString());
             }
-
+            
             DebugLog.Write("Parsing CDR...\n");
 
             CDR CDRBlob = null;
@@ -147,7 +149,13 @@ namespace CDRUpdater
 
                         SQLQuery.BuildDataInsertFromTypeWithChanges(row, p_reader, cdr_id, prev_cdr_id, out sub_current_data, out sub_state_data);
 
-                        sw_sub.Write(sub_current_data + String.Format("\t{0:u}", now) + "\r\n");
+                        string update;
+                        if (sub_state_data == null)
+                            update = p_reader["date_updated"].ToString();
+                        else
+                            update = String.Format("{0:u}", now);
+
+                        sw_sub.Write(sub_current_data + "\t" + update + "\r\n");
 
                         if (sub_state_data != null)
                         {
@@ -233,7 +241,13 @@ namespace CDRUpdater
 
                         SQLQuery.BuildDataInsertFromTypeWithChanges(row, p_reader, cdr_id, prev_cdr_id, out app_current_data, out app_state_data);
 
-                        sw_app.Write(app_current_data + String.Format("\t{0:u}", now) + "\r\n");
+                        string update;
+                        if (app_state_data == null)
+                            update = p_reader["date_updated"].ToString();
+                        else
+                            update = String.Format("{0:u}", now);
+
+                        sw_app.Write(app_current_data + "\t" + update + "\r\n");
 
                         if (app_state_data != null)
                         {
@@ -286,7 +300,8 @@ namespace CDRUpdater
             DebugLog.Write("Built app updates...\n");
             DebugLog.Write("Updating database...\n");
 
-            string[] files = new string[] { "app.data", "app_capture.data", "sub.data", "sub_capture.data", "app_filesystem.data", "app_version.data", "apps_subs.data" };            string[] tables = new string[] { "app", "app_state_capture", "sub", "sub_state_capture", "app_filesystem", "app_version", "apps_subs" };
+            string[] files = new string[] { "app.data", "app_capture.data", "sub.data", "sub_capture.data", "app_filesystem.data", "app_version.data", "apps_subs.data" };
+            string[] tables = new string[] { "app", "app_state_capture", "sub", "sub_state_capture", "app_filesystem", "app_version", "apps_subs" };
 
             for (int i = 0; i < files.Length; i++)
             {
