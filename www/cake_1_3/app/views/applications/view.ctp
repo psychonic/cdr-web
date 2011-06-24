@@ -10,6 +10,12 @@
 		
 		foreach($data['LaunchOptions'] as $launch) {
 			$launchBuffer .= '<table class="subcontent">';
+			
+			if(isset($launch['platform']))
+				$optional = array($format->column('Platform'), $launch['platform']);
+			else
+				$optional = array();
+				
 			$launchBuffer .= $html->tableCells(
 											array(
 												array($format->column('Description'), $launch['description']),
@@ -17,7 +23,8 @@
 												array($format->column('Icon Index'), $launch['iconIndex']),
 												array($format->column('No Desktop Shortcut'), $format->boolstring($launch['noDesktopShortcut'])),
 												array($format->column('No Start Menu Shortcut'), $format->boolstring($launch['noStartMenuShortcut'])),
-												array($format->column('Long Running Unattended'), $format->boolstring($launch['longRunningUnattended']))
+												array($format->column('Long Running Unattended'), $format->boolstring($launch['longRunningUnattended'])),
+												$optional
 											),
 											array('class' => 'even'),
 											array('class' => 'odd')
@@ -56,12 +63,20 @@
 		
 		foreach($data['AppFilesystem'] as $fs) {
 			$fsBuffer .= '<table class="subcontent">';
+			
+			$fsTable = 	array(
+									array($format->column('App ID'), $format->applink($fs['app_id_filesystem'])),
+									array($format->column('Is Optional'), $format->boolstring($fs['is_optional']))
+								);
+			
+			if(!empty($fs['platform']))
+				$fsTable[] = array($format->column('Platform'), $fs['platform']);
+				
+			if(!empty($fs['mount_name']))
+				$fsTable[] = array($format->column('Mount Name'), $fs['mount_name']);
+				
 			$fsBuffer .= $html->tableCells(
-										array(
-											array($format->column('App ID'), $format->applink($fs['app_id_filesystem'])),
-											array($format->column('Mount Name'), $fs['mount_name']),
-											array($format->column('Is Optional'), $format->boolstring($fs['is_optional']))
-										),
+										$fsTable,
 										array('class' => 'even'),
 										array('class' => 'odd')
 									);

@@ -20,73 +20,80 @@ namespace CDRUpdater
 
     public class AppLaunchOption
     {
-        [BlobField(FieldKey = CDRAppLaunchOptionFields.eFieldDescription)]
+        [BlobField(FieldKey = CDRAppLaunchOptionFields.eFieldDescription, Depth = 1)]
         public string Description { get; set; }
 
-        [BlobField(FieldKey = CDRAppLaunchOptionFields.eFieldCommandLine)]
+        [BlobField(FieldKey = CDRAppLaunchOptionFields.eFieldCommandLine, Depth = 1)]
         public string CommandLine { get; set; }
 
-        [BlobField(FieldKey = CDRAppLaunchOptionFields.eFieldIconIndex)]
+        [BlobField(FieldKey = CDRAppLaunchOptionFields.eFieldIconIndex, Depth = 1)]
         public int IconIndex { get; set; }
 
-        [BlobField(FieldKey = CDRAppLaunchOptionFields.eFieldNoDesktopShortcut)]
+        [BlobField(FieldKey = CDRAppLaunchOptionFields.eFieldNoDesktopShortcut, Depth = 1)]
         public bool NoDesktopShortcut { get; set; }
 
-        [BlobField(FieldKey = CDRAppLaunchOptionFields.eFieldNoStartMenuShortcut)]
+        [BlobField(FieldKey = CDRAppLaunchOptionFields.eFieldNoStartMenuShortcut, Depth = 1)]
         public bool NoStartMenuShortcut { get; set; }
 
-        [BlobField(FieldKey = CDRAppLaunchOptionFields.eFieldLongRunningUnattended)]
+        [BlobField(FieldKey = CDRAppLaunchOptionFields.eFieldLongRunningUnattended, Depth = 1)]
         public bool LongRunningUnattended { get; set; }
+
+        [BlobField(FieldKey = CDRAppLaunchOptionFields.eFieldPlatform, Depth = 1)]
+        public string Platform { get; set; }
     }
 
     public class AppVersion
     {
-        [BlobField(FieldKey = CDRAppVersionFields.eFieldDescription)]
+        [BlobField(FieldKey = CDRAppVersionFields.eFieldDescription, Depth = 1)]
         [SqlColumn("description")]
         public string Description { get; set; }
 
-        [BlobField(FieldKey = CDRAppVersionFields.eFieldVersionId)]
+        [BlobField(FieldKey = CDRAppVersionFields.eFieldVersionId, Depth = 1)]
         [SqlColumn("version_id")]
         public uint VersionID { get; set; }
 
-        [BlobField(FieldKey = CDRAppVersionFields.eFieldIsNotAvailable)]
+        [BlobField(FieldKey = CDRAppVersionFields.eFieldIsNotAvailable, Depth = 1)]
         [SqlColumn("is_not_available")]
         public bool IsNotAvailable { get; set; }
 
-        [BlobField(FieldKey = CDRAppVersionFields.eFieldLaunchOptionIdsRecord)]
+        [BlobField(FieldKey = CDRAppVersionFields.eFieldLaunchOptionIdsRecord, Depth = 1)]
         [SqlColumn("launch_option_ids")]
         public List<int> LaunchOptionIDs { get; set; }
 
-        [BlobField(FieldKey = CDRAppVersionFields.eFieldDepotEncryptionKey)]
+        [BlobField(FieldKey = CDRAppVersionFields.eFieldDepotEncryptionKey, Depth = 1)]
         [SqlColumn("depot_key")]
         public string DepotEncryptionKey { get; set; }
 
-        [BlobField(FieldKey = CDRAppVersionFields.eFieldIsEncryptionKeyAvailable)]
+        [BlobField(FieldKey = CDRAppVersionFields.eFieldIsEncryptionKeyAvailable, Depth = 1)]
         [SqlColumn("is_encryption_key_available")]
         public bool IsEncryptionKeyAvailable { get; set; }
 
-        [BlobField(FieldKey = CDRAppVersionFields.eFieldIsRebased)]
+        [BlobField(FieldKey = CDRAppVersionFields.eFieldIsRebased, Depth = 1)]
         [SqlColumn("is_rebased")]
         public bool IsRebased { get; set; }
 
-        [BlobField(FieldKey = CDRAppVersionFields.eFieldIsLongVersionRoll)]
+        [BlobField(FieldKey = CDRAppVersionFields.eFieldIsLongVersionRoll, Depth = 1)]
         [SqlColumn("is_long_version_roll")]
         public bool IsLongVersionRoll { get; set; }
     }
 
     public class AppFilesystem
     {
-        [BlobField(FieldKey = CDRAppFilesystemFields.eFieldAppId)]
+        [BlobField(FieldKey = CDRAppFilesystemFields.eFieldAppId, Depth = 1)]
         [SqlColumn("app_id_filesystem")]
         public int AppID { get; set; }
 
-        [BlobField(FieldKey = CDRAppFilesystemFields.eFieldMountName)]
+        [BlobField(FieldKey = CDRAppFilesystemFields.eFieldMountName, Depth = 1)]
         [SqlColumn("mount_name")]
         public string MountName { get; set; }
 
-        [BlobField(FieldKey = CDRAppFilesystemFields.eFieldIsOptional)]
+        [BlobField(FieldKey = CDRAppFilesystemFields.eFieldIsOptional, Depth = 1)]
         [SqlColumn("is_optional")]
         public bool IsOptional { get; set; }
+
+        [BlobField(FieldKey = CDRAppFilesystemFields.eFieldPlatform, Depth = 1)]
+        [SqlColumn("platform")]
+        public string Platform { get; set; }
     }
 
     public class App
@@ -175,34 +182,34 @@ namespace CDRUpdater
 
     public class SubRateLimit
     {
-        [BlobField( FieldKey = CDRSubRateLimitFields.eFieldLimit ) ]
+        [BlobField(FieldKey = CDRSubRateLimitFields.eFieldLimit, Depth = 1)]
         public uint Limit { get; set; }
 
-        [BlobField( FieldKey = CDRSubRateLimitFields.eFieldPeriodInMinutes )]
+        [BlobField(FieldKey = CDRSubRateLimitFields.eFieldPeriodInMinutes, Depth = 1)]
         public uint PeriodInMinutes { get; set; }
     }
 
     public class SubDiscount
     {
-        [BlobField( FieldKey = CDRSubDiscountFields.eFieldName )]
+        [BlobField(FieldKey = CDRSubDiscountFields.eFieldName, Depth = 1)]
         public string Name { get; set; }
 
-        [BlobField( FieldKey = CDRSubDiscountFields.eFieldDiscountInCents )]
+        [BlobField(FieldKey = CDRSubDiscountFields.eFieldDiscountInCents, Depth = 1)]
         public uint DiscountInCents { get; set; }
 
-        [BlobField( FieldKey = CDRSubDiscountFields.eFieldDiscountQualifiersRecord, Complex = true )]
+        [BlobField(FieldKey = CDRSubDiscountFields.eFieldDiscountQualifiersRecord, Complex = true, Depth = 1)]
         public List<SubDiscountQualifier> DiscountQualifiers { get; set; }
     }
 
     public class SubDiscountQualifier
     {
-        [BlobField( FieldKey = CDRSubDiscountQualifierFields.eFieldName )]
+        [BlobField(FieldKey = CDRSubDiscountQualifierFields.eFieldName, Depth = 1)]
         public string Name { get; set; }
 
-        [BlobField( FieldKey = CDRSubDiscountQualifierFields.eFieldSubscriptionRequired )]
+        [BlobField(FieldKey = CDRSubDiscountQualifierFields.eFieldSubscriptionRequired, Depth = 1)]
         public uint SubscriptionRequired { get; set; }
 
-        [BlobField( FieldKey = CDRSubDiscountQualifierFields.eFieldIsDisqualifier )]
+        [BlobField(FieldKey = CDRSubDiscountQualifierFields.eFieldIsDisqualifier, Depth = 1)]
         public bool IsDisqualifier { get; set; }
     }
     
