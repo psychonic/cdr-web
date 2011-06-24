@@ -59,16 +59,16 @@
     <Compile Include="SQL\SQLTable.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="E:\steamre\SteamKit2\SteamKit2\SteamKit2.csproj">
-      <Project>{BEB5BF07-BB56-402A-97A3-A41C6444C6A5}</Project>
-      <Name>SteamKit2</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
     <None Include="connection_string.cfg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="E:\steamre\SteamKit2\SteamKit2\SteamKit2.csproj">
+      <Project>{BEB5BF07-BB56-402A-97A3-A41C6444C6A5}</Project>
+      <Name>SteamKit2</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
