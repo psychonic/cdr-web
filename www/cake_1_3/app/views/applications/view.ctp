@@ -84,7 +84,7 @@
 		}
 		
 		// optimize this?
-		$userAppLinks = array('primarycache', 'primarycache_mac', 'primarycache_macos', 'dependantOnApp', 'vacmodulecache', 'vacmacmodulecache', 'DemoOfAppID', 'DLCForAppID', 'MustOwnAppToPurchase');
+		$userAppLinks = array('primarycache', 'primarycache_mac', 'primarycache_macos', 'dependantOnApp', 'vacmodulecache', 'vacmacmodulecache', 'DemoOfAppID', 'DLCForAppID', 'MustOwnAppToPurchase', 'RequiredAppID');
 		
 		if($data['UserDefined'] === null && !empty($app_info['user_defined'])) {
 			$userBuffer = $app_info['user_defined'];
