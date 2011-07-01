@@ -30,40 +30,31 @@ class HistoryComponent extends Object {
 		$hist_changes = array();
 		
 		$this->controller->LoadModel('ContentRecord');
-		$topCDR = $this->controller->ContentRecord->top($capture_data[0][$this->controller->modelCapture]['cdr_id']);
-		
 
-		for($i = -1; $i < count($capture_data) - 1; $i++) {
+		for($i = 0; $i < count($capture_data); $i++) {
 			$changed = array();
-			$hcapture = null;
-			$cdr_id = null;
 			
-			if($i == -1) {
-				$hcapture = $hist;
-				$cdr_id = $topCDR;
-			} else {
-				$hcapture = $capture_data[($i < 0 ? 0 : $i)][$this->controller->modelCapture];
-				$cdr_id = $hcapture['cdr_id'];
-			}
-			
-			$ncapture = $capture_data[$i+1][$this->controller->modelCapture];
-			
-			if($ncapture['created'] == true) {
-				$changed[] = 'Created';
+			$hcapture = $capture_data[$i][$this->controller->modelCapture];
+			$cdr_id = $this->controller->ContentRecord->top($hcapture['cdr_id']); // just make this +1?
+
+			if($i >= 0 && $hcapture['created'] == true) {
+				$hist_changes[] = array($cdr_id, array('Created'));
 			} else {
 				// this is a slightly different loop than incrementalBuildState, we want to iterate all the changed columns in a row before we move on
 				foreach($hist as $key => $value) {
-					if($key != 'date_updated' && $ncapture[$key] != null && $key != $this->controller->modelPK) {
+					if($key != 'date_updated' && $key != $this->controller->modelPK && $hcapture[$key] != NULL && $hist[$key] != $hcapture[$key] ) {
 						$changed[] = $key . ' => ' . $hist[$key];
-						$hist[$key] = $ncapture[$key];
+						$hist[$key] = $hcapture[$key];
 					}
 				}
+				
+				$hist_changes[] = array($cdr_id, $changed);
 			}
-			$hist_changes[] = array($cdr_id, $changed);
 		}
 		
 		return $hist_changes;
 	}
+
 }
 
 ?>
