@@ -1,6 +1,9 @@
 - keep cdr_id when viewing subs (for now it just shows the current sub associations)
 
 - resolve app names for the view pages
+- resolve names for correct CDR on CDR View page
+
+- do diffs on user_defined
 
 - figure out the true date on the cdr
 
