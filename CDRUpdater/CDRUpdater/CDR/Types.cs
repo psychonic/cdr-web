@@ -16,6 +16,7 @@ namespace CDRUpdater
         HardwarePromo = 5,
         Gift = 6,
         AutoGrant = 7,
+        OEMTicket = 8,
     }
 
     public class AppLaunchOption
