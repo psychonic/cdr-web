@@ -157,7 +157,7 @@ namespace CDRUpdater
                         string sub_current_data = null;
                         string sub_state_data = null;
 
-                        SQLQuery.BuildDataInsertFromTypeWithChanges(row, p_reader, cdr_id, prev_cdr_id, out sub_current_data, out sub_state_data);
+                        SQLQuery.BuildDataInsertFromTypeWithChanges(row, p_reader, cdr_id, /*prev_cdr_id,*/ out sub_current_data, out sub_state_data);
 
                         string update;
                         if (sub_state_data == null && p_reader != null)
@@ -173,7 +173,7 @@ namespace CDRUpdater
                         }
                         else if (p_reader == null)
                         {
-                            sw_sub_capture.Write("{0}\t1\t{1}\r\n", prev_cdr_id, subid.ToString());
+                            sw_sub_capture.Write("{0}\t1\t{1}\r\n", /*prev_cdr_id,*/ cdr_id, subid.ToString());
                         }
                     },
                     (p_reader) =>
@@ -249,7 +249,7 @@ namespace CDRUpdater
                         string app_current_data = null;
                         string app_state_data = null;
 
-                        SQLQuery.BuildDataInsertFromTypeWithChanges(row, p_reader, cdr_id, prev_cdr_id, out app_current_data, out app_state_data);
+                        SQLQuery.BuildDataInsertFromTypeWithChanges(row, p_reader, cdr_id, /*prev_cdr_id,*/ out app_current_data, out app_state_data);
 
                         string update;
                         if (app_state_data == null && p_reader != null)
@@ -265,7 +265,7 @@ namespace CDRUpdater
                         }
                         else if (p_reader == null)
                         {
-                            sw_app_capture.Write("{0}\t1\t{1}\r\n", prev_cdr_id, appid.ToString());
+                            sw_app_capture.Write("{0}\t1\t{1}\r\n", /*prev_cdr_id,*/ cdr_id, appid.ToString());
                         }
                     },
                     (p_reader) =>

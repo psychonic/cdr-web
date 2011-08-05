@@ -24,14 +24,9 @@ class ContentRecordsController extends AppController
 		$this->ContentRecord->bindCapture();
 		
 		$data = $this->ContentRecord->read();
-
-		$nextCDR = $this->ContentRecord->bottom($id);
 		
-		if($nextCDR == false)
-			$nextCDR = '0';
-		
-		$appstate_created = $this->ContentRecord->AppStateCapture->find('all', array('conditions' => array('cdr_id' => $nextCDR, 'created' => 1), 'fields' => array('app_id', 'created', 'name'), 'order' => array('app_id ASC')));
-		$appstate_modified = $this->ContentRecord->AppStateCapture->find('all', array('conditions' => array('cdr_id' => $nextCDR, 'created' => 0), 'fields' => array('app_id', 'created', 'name'), 'order' => array('app_id ASC')));
+		$appstate_created = $this->ContentRecord->AppStateCapture->find('all', array('conditions' => array('cdr_id' => $id, 'created' => 1), 'fields' => array('app_id', 'created', 'name'), 'order' => array('app_id ASC')));
+		$appstate_modified = $this->ContentRecord->AppStateCapture->find('all', array('conditions' => array('cdr_id' => $id, 'created' => 0), 'fields' => array('app_id', 'created', 'name'), 'order' => array('app_id ASC')));
 		
 		$appnames = null;
 
@@ -42,6 +37,7 @@ class ContentRecordsController extends AppController
 			foreach($appstate_created as $app) {
 				$ids[] = $app['AppStateCapture']['app_id'];
 			}
+			
 			foreach($appstate_modified as $app) {
 				$ids[] = $app['AppStateCapture']['app_id'];
 			}
@@ -56,8 +52,8 @@ class ContentRecordsController extends AppController
 		}
 		
 		
-		$substate_created = $this->ContentRecord->SubStateCapture->find('all', array('conditions' => array('cdr_id' => $nextCDR,  'created' => 1), 'fields' => array('sub_id', 'created', 'name'), 'order' => array('sub_id ASC')));
-		$substate_modified = $this->ContentRecord->SubStateCapture->find('all', array('conditions' => array('cdr_id' => $nextCDR,  'created' => 0), 'fields' => array('sub_id', 'created', 'name'), 'order' => array('sub_id ASC')));
+		$substate_created = $this->ContentRecord->SubStateCapture->find('all', array('conditions' => array('cdr_id' => $id,  'created' => 1), 'fields' => array('sub_id', 'created', 'name'), 'order' => array('sub_id ASC')));
+		$substate_modified = $this->ContentRecord->SubStateCapture->find('all', array('conditions' => array('cdr_id' => $id,  'created' => 0), 'fields' => array('sub_id', 'created', 'name'), 'order' => array('sub_id ASC')));
 		
 		$subnames = null;
 		
@@ -65,11 +61,12 @@ class ContentRecordsController extends AppController
 			$subnames = array();
 			$ids = array();
 			
-			foreach($substate_created as $app) {
-				$ids[] = $app['SubStateCapture']['sub_id'];
+			foreach($substate_created as $sub) {
+				$ids[] = $sub['SubStateCapture']['sub_id'];
 			}
-			foreach($substate_modified as $app) {
-				$ids[] = $app['SubStateCapture']['sub_id'];
+			
+			foreach($substate_modified as $sub) {
+				$ids[] = $sub['SubStateCapture']['sub_id'];
 			}
 			
 			$this->loadModel('Subscription');
