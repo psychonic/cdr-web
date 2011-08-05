@@ -23,7 +23,7 @@ class Application extends AppModel {
 	}
 	
 	function findCapture() {
-			return $this->AppStateCapture->find('all', array('conditions' => array('app_id' => $this->app_id, 'cdr_id >=' => $this->cdr_target), 'order' => 'cdr_id ASC'));
+			return $this->AppStateCapture->find('all', array('conditions' => array('app_id' => $this->app_id, 'cdr_id >' => $this->cdr_target), 'order' => 'cdr_id ASC'));
 	}
 	
 	function getHistoryConditions() {

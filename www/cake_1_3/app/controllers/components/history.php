@@ -35,9 +35,9 @@ class HistoryComponent extends Object {
 			$changed = array();
 			
 			$hcapture = $capture_data[$i][$this->controller->modelCapture];
-			$cdr_id = $this->controller->ContentRecord->top($hcapture['cdr_id']); // just make this +1?
+			$cdr_id = $hcapture['cdr_id'];
 
-			if($i >= 0 && $hcapture['created'] == true) {
+			if($hcapture['created'] == true) {
 				$hist_changes[] = array($cdr_id, array('Created'));
 			} else {
 				// this is a slightly different loop than incrementalBuildState, we want to iterate all the changed columns in a row before we move on

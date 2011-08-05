@@ -16,7 +16,7 @@ class Subscription extends AppModel {
 	}
 	
 	function findCapture() {
-			return $this->SubStateCapture->find('all', array('conditions' => array('sub_id' => $this->sub_id, 'cdr_id >=' => $this->cdr_target), 'order' => 'cdr_id ASC'));
+			return $this->SubStateCapture->find('all', array('conditions' => array('sub_id' => $this->sub_id, 'cdr_id >' => $this->cdr_target), 'order' => 'cdr_id ASC'));
 	}
 	
 	function bindCapture() {
