@@ -107,10 +107,11 @@ namespace CDRUpdater
             // the current CDR is always the most recently processed
             int prev_cdr_id = Convert.ToInt32(connection.ExecuteScalar("SELECT cdr_id FROM cdr ORDER BY date_processed DESC LIMIT 1"));
 
-            DateTime now = DateTime.Now;
+            DateTime now = DateTime.UtcNow;
+            DateTime updated = CDRBlob.LastChangedExistingAppOrSubscriptionTime.ToDateTimeUTC();
 
             connection.Execute(String.Format("INSERT INTO cdr (hash, version, date_updated, date_processed, app_count, sub_count) VALUES ('{0}', {1}, '{2}', '{3}', {4}, {5})",
-                                                    hash_hex, CDRBlob.VersionNum, String.Format("{0:u}", CDRBlob.LastChangedExistingAppOrSubscriptionTime.ToDateTime()),
+                                                    hash_hex, CDRBlob.VersionNum, String.Format("{0:u}", updated),
                                                     String.Format("{0:u}", now),
                                                     CDRBlob.Apps.Count,
                                                     CDRBlob.Subs.Count));
