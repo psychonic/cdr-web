@@ -123,7 +123,7 @@ namespace CDRUpdater
                 sqlDict.Add(EscapeValue(type_value, enclose));
             }
 
-            writer.WriteLine("{0}\t{1}\t{2}\t{3}\r\n", prev_data["app_id"], prev_data["cdr_id"], cdr_id_last, String.Join("\t", sqlDict));
+            writer.Write("{0}\t{1}\t{2}\t{3}\r\n", prev_data["app_id"], prev_data["cdr_id"], cdr_id_last, String.Join("\t", sqlDict));
         }
 
         private static string GetStringValue(Type propType, object value, bool follow_types, out bool enclose)

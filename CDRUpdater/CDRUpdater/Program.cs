@@ -164,7 +164,7 @@ namespace CDRUpdater
                         if (sub_state_data == null && p_reader != null)
                             update = String.Format("{0:u}", p_reader["date_updated"]);
                         else
-                            update = String.Format("{0:u}", now);
+                            update = String.Format("{0:u}", updated);
 
                         sw_sub.Write(sub_current_data + "\t" + update + "\r\n");
 
@@ -256,7 +256,7 @@ namespace CDRUpdater
                         if (app_state_data == null && p_reader != null)
                             update = String.Format("{0:u}", p_reader["date_updated"]);
                         else
-                            update = String.Format("{0:u}", now);
+                            update = String.Format("{0:u}", updated);
 
                         sw_app.Write(app_current_data + "\t" + update + "\r\n");
 
