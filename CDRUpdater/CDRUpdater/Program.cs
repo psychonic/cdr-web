@@ -139,13 +139,13 @@ namespace CDRUpdater
                         string id = CDRBlob.Subs[x].SubID.ToString();
                         ids.Add(id);
 
-                        subTable.Attach(CDRBlob.Subs[x], id, CDRBlob.Subs[x].SubID);
+                        subTable.Attach(CDRBlob.Subs[x], new object[] { id }, CDRBlob.Subs[x].SubID);
 
                         CDRBlob.Subs[x].virtual_app_count = CDRBlob.Subs[x].AppIDs.Count;
 
                         foreach (uint appid in CDRBlob.Subs[x].AppIDs)
                         {
-                            appSubsTable.Attach((int)appid, id + appid.ToString(), CDRBlob.Subs[x].SubID);
+                            appSubsTable.Attach((int)appid, new object[] { id, appid }, CDRBlob.Subs[x].SubID);
 
                             appSubCounts[appid] = (appSubCounts.ContainsKey(appid) ? appSubCounts[appid] + 1 : 1 );
                         }
@@ -228,18 +228,18 @@ namespace CDRUpdater
                         string id = CDRBlob.Apps[x].AppID.ToString();
                         ids.Add(id);
 
-                        appTable.Attach(CDRBlob.Apps[x], id, CDRBlob.Apps[x].AppID);
+                        appTable.Attach(CDRBlob.Apps[x], new object[] { id }, CDRBlob.Apps[x].AppID);
 
                         CDRBlob.Apps[x].virtual_sub_count = (appSubCounts.ContainsKey(CDRBlob.Apps[x].AppID) ? appSubCounts[CDRBlob.Apps[x].AppID] : 0);
 
                         foreach (AppFilesystem fs in CDRBlob.Apps[x].Filesystems)
                         {
-                            fsTable.Attach(fs, id + fs.AppID.ToString() + fs.MountName, CDRBlob.Apps[x].AppID);
+                            fsTable.Attach(fs, new object[] { id, fs.AppID, fs.MountName }, CDRBlob.Apps[x].AppID);
                         }
 
                         foreach (AppVersion appv in CDRBlob.Apps[x].Versions)
                         {
-                            versionTable.Attach(appv, id + appv.Description + appv.VersionID.ToString(), CDRBlob.Apps[x].AppID);
+                            versionTable.Attach(appv, new object[] { id, appv.Description, appv.VersionID }, CDRBlob.Apps[x].AppID);
                         }
                     }
 
