@@ -25,7 +25,13 @@ namespace CDRUpdater
             RowIndexMap = new Dictionary<string,TableRow>();
         }
 
-        public void Attach(T row, string key, uint user_data)
+        // a true multi-key map
+        public static string MakeKey(object[] keys)
+        {
+            return string.Join("|", keys.Select(k => k.ToString()));
+        }
+
+        public void Attach(T row, object[] keys, uint user_data)
         {
             TableRow ts = new TableRow()
             {
@@ -33,7 +39,7 @@ namespace CDRUpdater
                 user_data = user_data
             };
 
-            RowIndexMap[key] = ts;
+            RowIndexMap[MakeKey(keys)] = ts;
         }
 
         public delegate void ProcessFoundCallback(T row, MySqlDataReader reader, uint userid);
@@ -42,9 +48,7 @@ namespace CDRUpdater
         {
             while (reader.Read())
             {
-                string key = reader[keys[0]].ToString();
-
-                for (int i = 1; i < keys.Length; i++) key += reader[keys[i]].ToString();
+                string key = MakeKey(keys.Select(k => reader[k]).ToArray());
 
                 TableRow ts;
                 if (RowIndexMap.TryGetValue(key, out ts))

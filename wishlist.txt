@@ -15,3 +15,5 @@
 - pretty format for cdr view
 
 - save view state for app/sub history when paginating
+
+- CDRUpdater: select fields in order we expect, then output in MySQL order (sanity)
