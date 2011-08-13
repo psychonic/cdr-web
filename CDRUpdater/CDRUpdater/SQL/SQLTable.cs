@@ -9,33 +9,31 @@ namespace CDRUpdater
 {
     class SQLTable<T>
     {
-        struct TStruct
+        struct TableRow
         {
             public T data;
-            public uint user_id;
+            public uint user_data;
         }
 
-        private Dictionary<int, TStruct> RowIndexMap;
+        private Dictionary<string, TableRow> RowIndexMap;
         private string[] keys;
 
         public SQLTable(string[] keys)
         {
             this.keys = keys;
 
-            RowIndexMap = new Dictionary<int,TStruct>();
+            RowIndexMap = new Dictionary<string,TableRow>();
         }
 
-        public void Attach(T row, int index, uint userid)
+        public void Attach(T row, string key, uint user_data)
         {
-            //Debug.Assert(RowIndexMap.ContainsKey(index) == false, "Duplicate key");
-
-            TStruct ts = new TStruct()
+            TableRow ts = new TableRow()
             {
                 data = row,
-                user_id = userid
+                user_data = user_data
             };
 
-            RowIndexMap[index] = ts;
+            RowIndexMap[key] = ts;
         }
 
         public delegate void ProcessFoundCallback(T row, MySqlDataReader reader, uint userid);
@@ -44,27 +42,28 @@ namespace CDRUpdater
         {
             while (reader.Read())
             {
-                string tohash = reader[keys[0]].ToString();
+                string key = reader[keys[0]].ToString();
 
-                for (int i = 1; i < keys.Length; i++) tohash += reader[keys[i]].ToString();
+                for (int i = 1; i < keys.Length; i++) key += reader[keys[i]].ToString();
 
-                int hash = tohash.GetHashCode();
-
-                TStruct ts;
-                if (RowIndexMap.TryGetValue(hash, out ts))
+                TableRow ts;
+                if (RowIndexMap.TryGetValue(key, out ts))
                 {
-                    callback(ts.data, reader, ts.user_id);
-                    RowIndexMap.Remove(hash);
+                    // we found the row by the key we were looking for, do update logic
+                    callback(ts.data, reader, ts.user_data);
+                    RowIndexMap.Remove(key);
                 }
                 else
                 {
+                    // this row is in the DB but we don't have a key for it, do closeout logic
                     callbackMissing(reader);
                 }
             }
 
-            foreach (TStruct ts in RowIndexMap.Values)
+            foreach (TableRow ts in RowIndexMap.Values)
             {
-                callback(ts.data, null, ts.user_id);
+                // we have rows that we didn't find in the DB, do insert logic
+                callback(ts.data, null, ts.user_data);
             }
         }
     }
