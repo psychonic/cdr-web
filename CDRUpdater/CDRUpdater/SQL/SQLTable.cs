@@ -69,6 +69,8 @@ namespace CDRUpdater
                 // we have rows that we didn't find in the DB, do insert logic
                 callback(ts.data, null, ts.user_data);
             }
+
+            RowIndexMap.Clear();
         }
     }
 }

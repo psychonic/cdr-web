@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SteamKit2;
+using SteamKit2.Blob;
 using Jayrock.Json.Conversion;
 using System.Data;
 using System.IO;

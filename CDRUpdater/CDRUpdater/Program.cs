@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using SteamKit2;
+using SteamKit2.Blob;
 using MySql.Data.MySqlClient;
 using System.Data;
 using System.Diagnostics;
@@ -24,8 +25,6 @@ namespace CDRUpdater
 
             DebugLog.Write("CDR updater running!\n");
 
-            DebugLog.Write("Downloading CDR...\n");
-
             byte[] cdr = null;
 
             if (args.Length == 1 && File.Exists(args[0]))
@@ -36,6 +35,8 @@ namespace CDRUpdater
             }
             else
             {
+                DebugLog.Write("Downloading CDR...\n");
+
                 try
                 {
                     byte[] hash = null;
@@ -85,6 +86,13 @@ namespace CDRUpdater
             
             DebugLog.Write("Parsing CDR...\n");
 
+            ProcessCDR(connection_string, hash_hex);
+
+            DebugLog.Write("Finished.\n");
+        }
+
+        static void ProcessCDR(string connection_string, string hash_hex)
+        {
             CDR CDRBlob = null;
 
             using (BlobTypedReader<CDR> BlobReader = BlobTypedReader<CDR>.Create(CDRBLOB))
@@ -147,7 +155,7 @@ namespace CDRUpdater
                         {
                             appSubsTable.Attach((int)appid, new object[] { id, appid }, CDRBlob.Subs[x].SubID);
 
-                            appSubCounts[appid] = (appSubCounts.ContainsKey(appid) ? appSubCounts[appid] + 1 : 1 );
+                            appSubCounts[appid] = (appSubCounts.ContainsKey(appid) ? appSubCounts[appid] + 1 : 1);
                         }
                     }
 
@@ -215,7 +223,7 @@ namespace CDRUpdater
             using (StreamWriter sw_app_filesystem = new StreamWriter(new FileStream("app_filesystem.data", FileMode.Create)))
             using (StreamWriter sw_app_version = new StreamWriter(new FileStream("app_version.data", FileMode.Create)))
             {
-                for(int i = 0; i < CDRBlob.Apps.Count; i += CHUNK_PROCESS)
+                for (int i = 0; i < CDRBlob.Apps.Count; i += CHUNK_PROCESS)
                 {
                     List<string> ids = new List<string>();
 
@@ -271,9 +279,9 @@ namespace CDRUpdater
                     },
                     (p_reader) =>
                     {
-                         DebugLog.Write("Warning, app id {0} is missing from CDR but left in DB\n", p_reader["app_id"]);
+                        DebugLog.Write("Warning, app id {0} is missing from CDR but left in DB\n", p_reader["app_id"]);
 
-                         Debug.Fail("Unable to continue, missing appID");
+                        Debug.Fail("Unable to continue, missing appID");
                     });
 
                     reader.Close();
@@ -318,8 +326,6 @@ namespace CDRUpdater
             {
                 connection.Execute(String.Format("LOAD DATA INFILE '{0}' REPLACE INTO TABLE {1} LINES TERMINATED BY \"\r\n\"", SQLQuery.EscapeValue(Path.Combine(Environment.CurrentDirectory, files[i]), false), tables[i]));
             }
-
-            DebugLog.Write("Finished.\n");
         }
     }
 }

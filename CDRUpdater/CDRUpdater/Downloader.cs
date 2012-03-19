@@ -30,7 +30,7 @@ namespace CDRUpdater
                     GeneralDSClient gdsClient = new GeneralDSClient();
                     gdsClient.Connect(gdsServer);
 
-                    csServerList = gdsClient.GetServerList(EServerType.ConfigServer);
+                    csServerList = gdsClient.GetServerList(ESteam2ServerType.ConfigServer);
 
                     gdsClient.Disconnect();
                 }
