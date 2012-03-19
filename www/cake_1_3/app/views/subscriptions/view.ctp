@@ -5,7 +5,7 @@
 		// optimize this?
 		$userBuffer = '';
 		$userSubLinks = array('OnPurchaseGrantGuestPassPackage', 'OnPurchaseGrantGuestPassPackage1', 'OnPurchaseGrantGuestPassPackage2', 'OnPurchaseGrantGuestPassPackage3', 'OnPurchaseGrantGuestPassPackage4');
-		$userAppLinks = array('AppIDOwnedRequired', 'DontGrantIfAppIDOwned');
+		$userAppLinks = array('AppIDOwnedRequired', 'DontGrantIfAppIDOwned','LegacyGameKeyAppId');
 		$userTimeFormats = array('ExpiryTime');
 		
 		foreach($data['ExtendedInfo'] as $key => $value) {

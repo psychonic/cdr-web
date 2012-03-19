@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 3.4.3.2
+-- version 3.4.0
 -- http://www.phpmyadmin.net
 --
--- Host: localhost:3306
+-- Host: 127.0.0.1:3306
 
--- Generation Time: Aug 12, 2011 at 01:53 AM
--- Server version: 5.5.15
+-- Generation Time: Sep 20, 2011 at 02:30 AM
+-- Server version: 5.5.12
 -- PHP Version: 5.3.6
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
@@ -73,7 +73,8 @@ CREATE TABLE `app_filesystem` (
   `mount_name` varchar(255) NOT NULL,
   `is_optional` tinyint(1) NOT NULL,
   `platform` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`app_id`,`cdr_id`,`app_id_filesystem`,`mount_name`)
+  PRIMARY KEY (`app_id`,`cdr_id`,`app_id_filesystem`,`mount_name`),
+  KEY `cdr_id_last` (`cdr_id_last`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -126,7 +127,8 @@ CREATE TABLE `app_version` (
   `is_encryption_key_available` tinyint(1) NOT NULL,
   `is_rebased` tinyint(1) NOT NULL,
   `is_long_version_roll` tinyint(1) NOT NULL,
-  PRIMARY KEY (`app_id`,`cdr_id`,`description`,`version_id`)
+  PRIMARY KEY (`app_id`,`cdr_id`,`description`,`version_id`),
+  KEY `cdr_id_last` (`cdr_id_last`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
