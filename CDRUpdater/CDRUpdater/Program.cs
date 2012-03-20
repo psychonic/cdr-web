@@ -119,8 +119,8 @@ namespace CDRUpdater
             DateTime updated = CDRBlob.LastChangedExistingAppOrSubscriptionTime.ToDateTimeUTC();
 
             connection.Execute(String.Format("INSERT INTO cdr (hash, version, date_updated, date_processed, app_count, sub_count) VALUES ('{0}', {1}, '{2}', '{3}', {4}, {5})",
-                                                    hash_hex, CDRBlob.VersionNum, String.Format("{0:u}", updated),
-                                                    String.Format("{0:u}", now),
+                                                    hash_hex, CDRBlob.VersionNum, updated.ToString("yyyy-MM-dd HH:mm"),
+                                                    now.ToString("yyyy-MM-dd HH:mm"),
                                                     CDRBlob.Apps.Count,
                                                     CDRBlob.Subs.Count));
 
