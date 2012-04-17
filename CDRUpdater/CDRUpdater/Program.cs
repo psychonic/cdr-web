@@ -128,6 +128,7 @@ namespace CDRUpdater
 
             DebugLog.Write("Building sub updates...\n");
 
+            Dictionary<uint, bool> idCount = new Dictionary<uint, bool>(); // dictionary of subs or apps to check against repeats 
             Dictionary<uint, int> appSubCounts = new Dictionary<uint, int>();
 
             // capture sub data
@@ -145,6 +146,14 @@ namespace CDRUpdater
                     for (int x = i; x < i + CHUNK_PROCESS && x < CDRBlob.Subs.Count; x++)
                     {
                         string id = CDRBlob.Subs[x].SubID.ToString();
+
+                        if (idCount.ContainsKey(CDRBlob.Subs[x].SubID))
+                        {
+                            Console.WriteLine("Warning: Duplicate sub \"{0}\" ({1}), using the first definition.", CDRBlob.Subs[x].Name, CDRBlob.Subs[x].SubID);
+                            continue;
+                        }
+                        idCount[CDRBlob.Subs[x].SubID] = true;
+
                         ids.Add(id);
 
                         subTable.Attach(CDRBlob.Subs[x], new object[] { id }, CDRBlob.Subs[x].SubID);
@@ -214,6 +223,7 @@ namespace CDRUpdater
 
 
             DebugLog.Write("Built sub updates...\n");
+            idCount.Clear();
             DebugLog.Write("Building app updates...\n");
 
 
@@ -233,6 +243,13 @@ namespace CDRUpdater
 
                     for (int x = i; x < i + CHUNK_PROCESS && x < CDRBlob.Apps.Count; x++)
                     {
+                        if (idCount.ContainsKey(CDRBlob.Apps[x].AppID))
+                        {
+                            Console.WriteLine("Warning: Duplicate app \"{0}\" ({1}), using the first definition.", CDRBlob.Apps[x].Name, CDRBlob.Apps[x].AppID);
+                            continue;
+                        }
+                        idCount[CDRBlob.Apps[x].AppID] = true;
+
                         string id = CDRBlob.Apps[x].AppID.ToString();
                         ids.Add(id);
 
