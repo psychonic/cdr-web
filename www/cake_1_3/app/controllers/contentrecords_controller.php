@@ -25,6 +25,10 @@ class ContentRecordsController extends AppController
 		
 		$data = $this->ContentRecord->read();
 		
+		if($data == null) {
+			$this->cakeError('noItemFound', array('item_id'=>$id));
+		}
+		
 		$appstate_created = $this->ContentRecord->AppStateCapture->find('all', array('conditions' => array('cdr_id' => $id, 'created' => 1), 'fields' => array('app_id', 'created', 'name'), 'order' => array('app_id ASC')));
 		$appstate_modified = $this->ContentRecord->AppStateCapture->find('all', array('conditions' => array('cdr_id' => $id, 'created' => 0), 'fields' => array('app_id', 'created', 'name'), 'order' => array('app_id ASC')));
 		

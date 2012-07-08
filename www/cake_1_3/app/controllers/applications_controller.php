@@ -42,6 +42,10 @@ class ApplicationsController extends AppController
 		$this->Application->app_id = $id;
 		$data = $this->Application->read();
 
+		if($data == null) {
+			$this->cakeError('noItemFound', array('item_id'=>$id));
+		}
+		
 		if(isset($cdr_want)) {
 			$history = $this->Application->findCapture();
 
@@ -65,7 +69,11 @@ class ApplicationsController extends AppController
 		
 		$this->Application->app_id = $id;
 		$data = $this->Application->read();
-
+		
+		if($data == null) {
+			$this->cakeError('noItemFound', array('item_id'=>$id));
+		}
+		
 		$this->paginate['order'] = array('Subscription.sub_id' => 'asc');
 		$pagination = $this->paginate('Subscription', array('AppsSubs.app_id' => $id));
 		
@@ -84,6 +92,10 @@ class ApplicationsController extends AppController
 		$this->Application->app_id = $id;
 		$data = $this->Application->read();
 
+		if($data == null) {
+			$this->cakeError('noItemFound', array('item_id'=>$id));
+		}
+		
 		$this->paginate['order'] = array('AppStateCapture.cdr_id' => 'desc');
 		
 		$hist_data = $this->paginate('AppStateCapture', array('app_id' => $id));
