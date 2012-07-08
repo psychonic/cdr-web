@@ -38,6 +38,10 @@ class SubscriptionsController extends AppController
 		$this->Subscription->sub_id = $id;
 		$data = $this->Subscription->read();
 
+		if($data == null) {
+			$this->cakeError('noItemFound', array('item_id'=>$id));
+		}
+
 		if(isset($cdr_want)) {
 			$history = $this->Subscription->findCapture();
 
@@ -61,6 +65,10 @@ class SubscriptionsController extends AppController
 		$this->Subscription->sub_id = $id;
 		$data = $this->Subscription->read();
 
+		if($data == null) {
+			$this->cakeError('noItemFound', array('item_id'=>$id));
+		}
+		
 		$this->paginate['order'] = array('Application.app_id' => 'asc');
 		$pagination = $this->paginate('Application', array('AppsSubs.sub_id' => $id));
 		
@@ -79,6 +87,10 @@ class SubscriptionsController extends AppController
 		$this->Subscription->sub_id = $id;
 		$data = $this->Subscription->read();
 
+		if($data == null) {
+			$this->cakeError('noItemFound', array('item_id'=>$id));
+		}
+		
 		$this->paginate['order'] = array('SubStateCapture.cdr_id' => 'desc');
 		
 		$hist_data = $this->paginate('SubStateCapture', array('sub_id' => $id));
