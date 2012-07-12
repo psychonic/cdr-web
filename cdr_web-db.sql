@@ -4,12 +4,18 @@
 --
 -- Host: 127.0.0.1:3306
 
--- Generation Time: Sep 20, 2011 at 02:30 AM
+-- Generation Time: Jul 12, 2012 at 05:16 PM
 -- Server version: 5.5.12
 -- PHP Version: 5.3.6
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
 
 --
 -- Database: `cdr_web`
@@ -56,7 +62,8 @@ CREATE TABLE `apps_subs` (
   `sub_id` int(11) NOT NULL,
   `cdr_id` int(11) NOT NULL,
   `cdr_id_last` int(11) DEFAULT NULL,
-  PRIMARY KEY (`app_id`,`sub_id`,`cdr_id`)
+  PRIMARY KEY (`app_id`,`sub_id`,`cdr_id`),
+  KEY `appid_subid` (`app_id`,`sub_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -106,7 +113,8 @@ CREATE TABLE `app_state_capture` (
   `app_of_manifest_only` int(11) DEFAULT NULL,
   `sub_count` int(11) DEFAULT NULL,
   PRIMARY KEY (`cdr_id`,`app_id`),
-  KEY `created` (`created`)
+  KEY `created` (`created`),
+  KEY `appid` (`app_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -217,3 +225,7 @@ CREATE TABLE `sub_state_capture` (
   PRIMARY KEY (`cdr_id`,`sub_id`),
   KEY `created` (`created`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
