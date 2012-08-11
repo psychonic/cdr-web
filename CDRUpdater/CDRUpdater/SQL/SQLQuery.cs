@@ -136,10 +136,7 @@ namespace CDRUpdater
             {
             }
 
-            Type generic;
-            int genericCount;
-
-            if (follow_types && propType.IsTypeListOrDictionary(out generic, out genericCount))
+            if (follow_types && propType.IsGenericType && (propType.GetGenericTypeDefinition() == typeof(List<>) || propType.GetGenericTypeDefinition() == typeof(Dictionary<,>)))
             {
                 if (value == null)
                     value = new object[] { };
