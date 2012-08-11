@@ -95,11 +95,9 @@ namespace CDRUpdater
         {
             CDR CDRBlob = null;
 
-            using (BlobTypedReader<CDR> BlobReader = BlobTypedReader<CDR>.Create(CDRBLOB))
+            using (BlobReader reader = BlobReader.CreateFrom(CDRBLOB))
             {
-                BlobReader.Process();
-
-                CDRBlob = BlobReader.Target;
+                CDRBlob = (CDR)BlobTypedReader.Deserialize(reader, typeof(CDR));
             }
 
             if (CDRBlob == null)
